@@ -16,6 +16,8 @@ router.post('/', [
   body('type').isIn(['Formative', 'Summative']).withMessage('Type must be Formative or Summative'),
   body('courseId').isMongoId().withMessage('Valid course ID is required'),
   body('maxMarks').isNumeric().isFloat({ min: 1 }).withMessage('Max marks must be a positive number'),
+  body('academicYear').notEmpty().withMessage('Academic year is required'),
+  body('term').isIn(['1st Term', '2nd Term', '3rd Term']).withMessage('Valid term is required'),
   body('marks').optional().isArray(),
   body('marks.*.studentId').optional().isMongoId(),
   body('marks.*.score').optional().isNumeric().isFloat({ min: 0 }),
@@ -28,7 +30,7 @@ router.post('/', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, type, courseId, maxMarks, marks } = req.body;
+    const { name, type, courseId, maxMarks, marks, academicYear, term } = req.body;
 
     // Verify course exists and teacher owns it
     const course = await Course.findById(courseId);
@@ -45,6 +47,8 @@ router.post('/', [
       type,
       course: courseId,
       maxMarks,
+      academicYear,
+      term,
       marks: Array.isArray(marks)
         ? marks.map(m => ({
             student: m.studentId,

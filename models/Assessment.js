@@ -21,6 +21,16 @@ const assessmentSchema = new mongoose.Schema({
     required: true,
     min: 1
   },
+  academicYear: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  term: {
+    type: String,
+    enum: ['1st Term', '2nd Term', '3rd Term'],
+    required: true
+  },
   marks: [{
     student: {
       type: mongoose.Schema.Types.ObjectId,

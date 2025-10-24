@@ -11,9 +11,57 @@ const router = express.Router();
 router.use(auth);
 router.use(requireRole(['teacher']));
 
+// Get available academic years and terms
+router.get('/academic-info', async (req, res) => {
+  try {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+    
+    // Determine current academic year
+    let academicYear;
+    if (currentMonth >= 9) {
+      academicYear = `${currentYear}-${currentYear + 1}`;
+    } else {
+      academicYear = `${currentYear - 1}-${currentYear}`;
+    }
+
+    // Determine current term based on month
+    let currentTerm;
+    if (currentMonth >= 9 && currentMonth <= 12) {
+      currentTerm = '1st Term';
+    } else if (currentMonth >= 1 && currentMonth <= 3) {
+      currentTerm = '2nd Term';
+    } else if (currentMonth >= 4 && currentMonth <= 7) {
+      currentTerm = '3rd Term';
+    } else {
+      currentTerm = '1st Term'; // Default for August
+    }
+
+    res.json({
+      currentAcademicYear: academicYear,
+      currentTerm: currentTerm,
+      academicYears: [
+        `${currentYear - 1}-${currentYear}`,
+        `${currentYear}-${currentYear + 1}`,
+        `${currentYear + 1}-${currentYear + 2}`
+      ],
+      terms: ['1st Term', '2nd Term', '3rd Term']
+    });
+  } catch (error) {
+    console.error('Academic info error:', error);
+    res.status(500).json({ message: 'Error fetching academic information' });
+  }
+});
+
 // Get teacher dashboard data
 router.get('/dashboard', async (req, res) => {
   try {
+    const { academicYear, term } = req.query;
+    
+    if (!academicYear || !term) {
+      return res.status(400).json({ message: 'Academic year and term are required' });
+    }
+
     const levels = ['Level 3', 'Level 4', 'Level 5'];
     const dashboardData = {};
 

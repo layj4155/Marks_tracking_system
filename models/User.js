@@ -36,6 +36,19 @@ const userSchema = new mongoose.Schema({
       return this.role === 'student';
     }
   },
+  currentAcademicYear: {
+    type: String,
+    default: function() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      if (month >= 9) {
+        return `${year}-${year + 1}`;
+      } else {
+        return `${year - 1}-${year}`;
+      }
+    }
+  },
   courses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course'

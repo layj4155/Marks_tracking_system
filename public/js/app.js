@@ -19,12 +19,22 @@ class PerformanceTracker {
         // Role selection for registration
         document.getElementById('regRole').addEventListener('change', (e) => {
             const levelField = document.getElementById('levelField');
+            const teacherWordField = document.getElementById('teacherWordField');
             if (e.target.value === 'student') {
                 levelField.classList.remove('hidden');
+                teacherWordField.classList.add('hidden');
                 document.getElementById('regLevel').required = true;
+                document.getElementById('regTeacherWord').required = false;
+            } else if (e.target.value === 'teacher') {
+                levelField.classList.add('hidden');
+                teacherWordField.classList.remove('hidden');
+                document.getElementById('regLevel').required = false;
+                document.getElementById('regTeacherWord').required = true;
             } else {
                 levelField.classList.add('hidden');
+                teacherWordField.classList.add('hidden');
                 document.getElementById('regLevel').required = false;
+                document.getElementById('regTeacherWord').required = false;
             }
         });
 
@@ -60,6 +70,12 @@ class PerformanceTracker {
         document.getElementById('addNewAssessmentBtn').addEventListener('click', () => this.showAssessmentModal(this.currentCourse));
         document.getElementById('editAssessmentForm').addEventListener('submit', (e) => this.handleEditAssessment(e));
         document.getElementById('cancelEditAssessmentBtn').addEventListener('click', () => this.hideEditAssessmentModal());
+
+        // Academic year and forgot password
+        document.getElementById('academicYearForm').addEventListener('submit', (e) => this.handleAcademicYearSelection(e));
+        document.getElementById('forgotPasswordLink').addEventListener('click', (e) => this.showForgotPasswordModal(e));
+        document.getElementById('forgotPasswordForm').addEventListener('submit', (e) => this.handleForgotPassword(e));
+        document.getElementById('cancelForgotPasswordBtn').addEventListener('click', () => this.hideForgotPasswordModal());
     }
 
     switchAuthTab(tab) {
@@ -119,7 +135,8 @@ class PerformanceTracker {
             email: document.getElementById('regEmail').value,
             password: document.getElementById('regPassword').value,
             role: document.getElementById('regRole').value,
-            level: document.getElementById('regLevel').value
+            level: document.getElementById('regLevel').value,
+            teacherWord: document.getElementById('regTeacherWord').value
         };
 
         try {
@@ -167,20 +184,13 @@ class PerformanceTracker {
     showDashboard() {
         document.getElementById('authPage').classList.add('hidden');
         
-        if (this.currentUser.role === 'teacher') {
-            document.getElementById('teacherDashboard').classList.remove('hidden');
-            document.getElementById('teacherName').textContent = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
-            this.loadTeacherDashboard();
-        } else {
-            document.getElementById('studentDashboard').classList.remove('hidden');
-            document.getElementById('studentName').textContent = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
-            this.loadStudentDashboard();
-        }
+        // Show academic year selection first
+        this.showAcademicYearSelection();
     }
 
     async loadTeacherDashboard() {
         try {
-            const response = await fetch('/api/teachers/dashboard', {
+            const response = await fetch(`/api/teachers/dashboard?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -317,6 +327,8 @@ class PerformanceTracker {
             courseId: this.currentCourse,
             maxMarks,
             marks,
+            academicYear: this.currentAcademicYear,
+            term: this.currentTerm,
             dateRecorded: new Date().toISOString().split('T')[0]
         };
 
@@ -676,7 +688,7 @@ class PerformanceTracker {
 
     async loadStudentDashboard() {
         try {
-            const response = await fetch('/api/students/dashboard', {
+            const response = await fetch(`/api/students/dashboard?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -755,6 +767,94 @@ class PerformanceTracker {
             messageDiv.textContent = '';
             messageDiv.className = 'mt-4 text-center text-sm';
         }, 5000);
+    }
+
+    async showAcademicYearSelection() {
+        try {
+            const endpoint = this.currentUser.role === 'teacher' ? '/api/teachers/academic-info' : '/api/students/academic-info';
+            const response = await fetch(endpoint, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const academicYearSelect = document.getElementById('academicYearSelect');
+                const termSelect = document.getElementById('termSelect');
+                
+                academicYearSelect.innerHTML = '';
+                data.academicYears.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    if (year === data.currentAcademicYear) option.selected = true;
+                    academicYearSelect.appendChild(option);
+                });
+
+                termSelect.value = data.currentTerm;
+                
+                document.getElementById('academicYearModal').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error loading academic info:', error);
+        }
+    }
+
+    async handleAcademicYearSelection(e) {
+        e.preventDefault();
+        const academicYear = document.getElementById('academicYearSelect').value;
+        const term = document.getElementById('termSelect').value;
+        
+        this.currentAcademicYear = academicYear;
+        this.currentTerm = term;
+        
+        document.getElementById('academicYearModal').classList.add('hidden');
+        
+        if (this.currentUser.role === 'teacher') {
+            document.getElementById('teacherDashboard').classList.remove('hidden');
+            document.getElementById('teacherName').textContent = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+            this.loadTeacherDashboard();
+        } else {
+            document.getElementById('studentDashboard').classList.remove('hidden');
+            document.getElementById('studentName').textContent = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+            this.loadStudentDashboard();
+        }
+    }
+
+    showForgotPasswordModal(e) {
+        e.preventDefault();
+        document.getElementById('forgotPasswordModal').classList.remove('hidden');
+    }
+
+    hideForgotPasswordModal() {
+        document.getElementById('forgotPasswordModal').classList.add('hidden');
+        document.getElementById('forgotPasswordForm').reset();
+    }
+
+    async handleForgotPassword(e) {
+        e.preventDefault();
+        const email = document.getElementById('forgotEmail').value;
+        const messageDiv = document.getElementById('forgotPasswordMessage');
+
+        try {
+            const response = await fetch('/api/auth/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                messageDiv.textContent = `Reset token: ${data.resetToken}`;
+                messageDiv.className = 'mt-4 text-center text-sm text-green-600';
+            } else {
+                messageDiv.textContent = data.message || 'Failed to send reset link';
+                messageDiv.className = 'mt-4 text-center text-sm text-red-600';
+            }
+        } catch (error) {
+            messageDiv.textContent = 'Failed to send reset link. Please try again.';
+            messageDiv.className = 'mt-4 text-center text-sm text-red-600';
+        }
     }
 }
 
