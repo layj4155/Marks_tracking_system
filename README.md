@@ -5,6 +5,7 @@ A comprehensive web application for tracking student performance with beautiful 
 ## Features
 
 ### Teacher Features
+-**Before Accessing Dashboard** Teacher have to select the Academic year and Term
 - **Dashboard**: View student counts across different levels (Level 3, 4, 5)
 - **Course Management**: Create and manage courses for each level
 - **Student Assignment**: Add/remove students from courses
@@ -16,6 +17,7 @@ A comprehensive web application for tracking student performance with beautiful 
   - 🔴 Red: Below 60% (Failing)
 
 ### Student Features
+-**Before Accessing Dashboard** Student have to select the Academic year and Term
 - **Read-only Dashboard**: View enrolled courses and performance
 - **Performance Tracking**: See average marks and status for each course
 - **Assessment History**: View all completed assessments with marks and teacher comments
