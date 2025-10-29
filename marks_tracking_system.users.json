@@ -1,0 +1,169 @@
+[{
+  "_id": {
+    "$oid": "68f8a0365d24616f47467ce8"
+  },
+  "firstName": "Joseph Marie",
+  "lastName": "ASHIMIRWE",
+  "email": "layj4155@gmail.com",
+  "password": "$2a$10$AJFDm9HWncMFEmW9IzxDZe.hSJXXQAhN3o4rWDKzs4egcgK6Mpaz6",
+  "role": "student",
+  "level": "Level 5",
+  "courses": [
+    {
+      "$oid": "68f8a0c95d24616f47467d0a"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-22T09:13:26.917Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-22T09:47:25.823Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68f8a0865d24616f47467cf0"
+  },
+  "firstName": "Joseph Marie",
+  "lastName": "ASHIMIRWE",
+  "email": "josefmarie123@gmail.com",
+  "password": "$2a$10$tgpnx6STW.wJeAIRWybp9eBVfrw0Pc3ntV3.XL8Odb53MGBBDKHru",
+  "role": "teacher",
+  "courses": [],
+  "createdAt": {
+    "$date": "2025-10-22T09:14:46.422Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-22T09:14:46.422Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68f8a12c5d24616f47467d2e"
+  },
+  "firstName": "Abba",
+  "lastName": "Irene",
+  "email": "abbairene@gmail.com",
+  "password": "$2a$10$5otouhklWDBDJcGUXNllBOxI7f6kF26vb1w/TlRctTK9vYhg/RV6q",
+  "role": "student",
+  "level": "Level 3",
+  "courses": [
+    {
+      "$oid": "68f8a0ae5d24616f47467cfc"
+    },
+    {
+      "$oid": "68f8a1c95d24616f47467d50"
+    },
+    {
+      "$oid": "69008eeb2d8ead614da4cb6d"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-22T09:17:32.106Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:38:02.826Z"
+  },
+  "__v": 3,
+  "currentAcademicYear": "2025-2026"
+},
+{
+  "_id": {
+    "$oid": "68f8a98e441620be18b602d2"
+  },
+  "firstName": "Amen",
+  "lastName": "Louis Marie",
+  "email": "amenlouis@gmail.com",
+  "password": "$2a$10$2oHLMU53LzG3B27MWKbkheBl.mG8wZq/ZktzgKuajU1N5x3gE5beC",
+  "role": "student",
+  "level": "Level 3",
+  "courses": [
+    {
+      "$oid": "68f8a0ae5d24616f47467cfc"
+    },
+    {
+      "$oid": "68f8a1c95d24616f47467d50"
+    },
+    {
+      "$oid": "69008eeb2d8ead614da4cb6d"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-22T09:53:18.231Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:38:11.822Z"
+  },
+  "__v": 3,
+  "currentAcademicYear": "2025-2026"
+},
+{
+  "_id": {
+    "$oid": "68fb2100daca8fb9b53868cb"
+  },
+  "firstName": "BIRORI",
+  "lastName": "Honorine",
+  "email": "birorihonorine@gmail.com",
+  "password": "$2a$10$hrYfgvbvgW8rGc2ybf5ufucrr0bWb333hbCQuD8ZohQxFgrFGnrXy",
+  "role": "student",
+  "level": "Level 4",
+  "courses": [
+    {
+      "$oid": "68f8a0e05d24616f47467d1a"
+    },
+    {
+      "$oid": "68f8a1ea5d24616f47467d5f"
+    },
+    {
+      "$oid": "68f8a30e5d24616f47467d7b"
+    }
+  ],
+  "currentAcademicYear": "2025-2026",
+  "createdAt": {
+    "$date": "2025-10-24T06:47:28.839Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-24T06:48:19.734Z"
+  },
+  "__v": 3
+},
+{
+  "_id": {
+    "$oid": "68fb230e4088881421847ebb"
+  },
+  "firstName": "Test",
+  "lastName": "Teacher",
+  "email": "teacher6@test.com",
+  "password": "$2a$10$Dc6L2h/Ymx7rnZh2F1PdlO3hzqowd/iekmW8DEL1jND3aj4bK2Czq",
+  "role": "teacher",
+  "courses": [],
+  "currentAcademicYear": "2025-2026",
+  "createdAt": {
+    "$date": "2025-10-24T06:56:14.171Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-24T06:56:14.171Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69008ecb2d8ead614da4cb60"
+  },
+  "firstName": "ASHIMIRWE",
+  "lastName": "Josef",
+  "email": "ashimirwejoseph@gmail.com",
+  "password": "$2a$10$Zcl9O7cEuyFwCCCBcKL6z.vWgHvaZbORxXJMcSOt8jyvLrJyMisOy",
+  "role": "teacher",
+  "courses": [],
+  "currentAcademicYear": "2025-2026",
+  "createdAt": {
+    "$date": "2025-10-28T09:37:15.302Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:37:15.302Z"
+  },
+  "__v": 0
+}]

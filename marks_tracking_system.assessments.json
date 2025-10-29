@@ -1,0 +1,244 @@
+[{
+  "_id": {
+    "$oid": "68fb1ed1daca8fb9b538683b"
+  },
+  "name": "JavaScript Fundamentals",
+  "type": "Formative",
+  "course": {
+    "$oid": "68f8a0ae5d24616f47467cfc"
+  },
+  "maxMarks": 70,
+  "academicYear": "2025-2026",
+  "term": "1st Term",
+  "marks": [
+    {
+      "student": {
+        "$oid": "68f8a12c5d24616f47467d2e"
+      },
+      "score": 50,
+      "comment": "Keep it up",
+      "_id": {
+        "$oid": "68fb1ed1daca8fb9b538683c"
+      }
+    },
+    {
+      "student": {
+        "$oid": "68f8a98e441620be18b602d2"
+      },
+      "score": 55,
+      "comment": "Perfect",
+      "_id": {
+        "$oid": "68fb1ed1daca8fb9b538683d"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-24T06:38:09.681Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-24T06:38:09.681Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68fb1f0bdaca8fb9b5386861"
+  },
+  "name": "Apply Graphic Design",
+  "type": "Formative",
+  "course": {
+    "$oid": "68f8a1c95d24616f47467d50"
+  },
+  "maxMarks": 50,
+  "academicYear": "2025-2026",
+  "term": "1st Term",
+  "marks": [
+    {
+      "student": {
+        "$oid": "68f8a12c5d24616f47467d2e"
+      },
+      "score": 37,
+      "comment": "Good",
+      "_id": {
+        "$oid": "68fb1f0bdaca8fb9b5386862"
+      }
+    },
+    {
+      "student": {
+        "$oid": "68f8a98e441620be18b602d2"
+      },
+      "score": 40,
+      "comment": "Very Good",
+      "_id": {
+        "$oid": "68fb1f0bdaca8fb9b5386863"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-24T06:39:07.092Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-24T06:39:07.092Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68fb1f31daca8fb9b5386879"
+  },
+  "name": "Python",
+  "type": "Formative",
+  "course": {
+    "$oid": "68f8a0c95d24616f47467d0a"
+  },
+  "maxMarks": 100,
+  "academicYear": "2025-2026",
+  "term": "1st Term",
+  "marks": [
+    {
+      "student": {
+        "$oid": "68f8a0365d24616f47467ce8"
+      },
+      "score": 89,
+      "comment": "Perfecto",
+      "_id": {
+        "$oid": "68fb1f31daca8fb9b538687a"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-24T06:39:45.966Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-24T06:39:45.966Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69008deb2d8ead614da4cb04"
+  },
+  "name": "Data Structure And Algorithm Using JavaScript",
+  "type": "Formative",
+  "course": {
+    "$oid": "68f8a0e05d24616f47467d1a"
+  },
+  "maxMarks": 70,
+  "academicYear": "2025-2026",
+  "term": "1st Term",
+  "marks": [
+    {
+      "student": {
+        "$oid": "68fb2100daca8fb9b53868cb"
+      },
+      "score": 65,
+      "comment": "Well",
+      "_id": {
+        "$oid": "69008deb2d8ead614da4cb05"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-28T09:33:31.142Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:33:31.142Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69008e0a2d8ead614da4cb15"
+  },
+  "name": "Backend System Design",
+  "type": "Formative",
+  "course": {
+    "$oid": "68f8a1ea5d24616f47467d5f"
+  },
+  "maxMarks": 50,
+  "academicYear": "2025-2026",
+  "term": "1st Term",
+  "marks": [
+    {
+      "student": {
+        "$oid": "68fb2100daca8fb9b53868cb"
+      },
+      "score": 43,
+      "comment": "Done well",
+      "_id": {
+        "$oid": "69008e0a2d8ead614da4cb16"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-28T09:34:02.178Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:34:02.178Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69008e232d8ead614da4cb27"
+  },
+  "name": "Backend Application Development",
+  "type": "Formative",
+  "course": {
+    "$oid": "68f8a30e5d24616f47467d7b"
+  },
+  "maxMarks": 100,
+  "academicYear": "2025-2026",
+  "term": "1st Term",
+  "marks": [
+    {
+      "student": {
+        "$oid": "68fb2100daca8fb9b53868cb"
+      },
+      "score": 87,
+      "comment": "Perfect",
+      "_id": {
+        "$oid": "69008e232d8ead614da4cb28"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-28T09:34:27.968Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:34:27.968Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69008e5e2d8ead614da4cb3f"
+  },
+  "name": "Data Structure And Algorithm Using JavaScript",
+  "type": "Summative",
+  "course": {
+    "$oid": "68f8a0e05d24616f47467d1a"
+  },
+  "maxMarks": 100,
+  "academicYear": "2025-2026",
+  "term": "1st Term",
+  "marks": [
+    {
+      "student": {
+        "$oid": "68fb2100daca8fb9b53868cb"
+      },
+      "score": 89,
+      "comment": "Keep it up",
+      "_id": {
+        "$oid": "69008e5e2d8ead614da4cb40"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-28T09:35:26.456Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:35:26.456Z"
+  },
+  "__v": 0
+}]

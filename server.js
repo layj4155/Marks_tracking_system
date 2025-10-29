@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://layj4155_db_user:6qFVYqmL8V8qynLu@markstrackingsystem.gjthbiv.mongodb.net/?appName=markstrackingsystem';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/marks_tracking_system';
 
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,

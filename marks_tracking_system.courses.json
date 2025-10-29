@@ -1,0 +1,197 @@
+[{
+  "_id": {
+    "$oid": "68f8a0ae5d24616f47467cfc"
+  },
+  "name": "JavaScript Fundamentals",
+  "level": "Level 3",
+  "teacher": {
+    "$oid": "68f8a0865d24616f47467cf0"
+  },
+  "students": [
+    {
+      "$oid": "68f8a12c5d24616f47467d2e"
+    },
+    {
+      "$oid": "68f8a98e441620be18b602d2"
+    }
+  ],
+  "assessments": [
+    {
+      "$oid": "68fb1ed1daca8fb9b538683b"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-22T09:15:27.007Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-24T06:38:09.711Z"
+  },
+  "__v": 7
+},
+{
+  "_id": {
+    "$oid": "68f8a0c95d24616f47467d0a"
+  },
+  "name": "Python",
+  "level": "Level 5",
+  "teacher": {
+    "$oid": "68f8a0865d24616f47467cf0"
+  },
+  "students": [
+    {
+      "$oid": "68f8a0365d24616f47467ce8"
+    }
+  ],
+  "assessments": [
+    {
+      "$oid": "68fb1f31daca8fb9b5386879"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-22T09:15:53.294Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-24T06:39:45.973Z"
+  },
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "68f8a0e05d24616f47467d1a"
+  },
+  "name": "Data Structure And Algorithm Using JavaScript",
+  "level": "Level 4",
+  "teacher": {
+    "$oid": "68f8a0865d24616f47467cf0"
+  },
+  "students": [
+    {
+      "$oid": "68fb2100daca8fb9b53868cb"
+    }
+  ],
+  "assessments": [
+    {
+      "$oid": "69008deb2d8ead614da4cb04"
+    },
+    {
+      "$oid": "69008e5e2d8ead614da4cb3f"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-22T09:16:16.816Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:35:26.461Z"
+  },
+  "__v": 3
+},
+{
+  "_id": {
+    "$oid": "68f8a1c95d24616f47467d50"
+  },
+  "name": "Apply Graphic Design",
+  "level": "Level 3",
+  "teacher": {
+    "$oid": "68f8a0865d24616f47467cf0"
+  },
+  "students": [
+    {
+      "$oid": "68f8a12c5d24616f47467d2e"
+    },
+    {
+      "$oid": "68f8a98e441620be18b602d2"
+    }
+  ],
+  "assessments": [
+    {
+      "$oid": "68fb1f0bdaca8fb9b5386861"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-22T09:20:09.520Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-24T06:39:07.099Z"
+  },
+  "__v": 4
+},
+{
+  "_id": {
+    "$oid": "68f8a1ea5d24616f47467d5f"
+  },
+  "name": "Backend System Design",
+  "level": "Level 4",
+  "teacher": {
+    "$oid": "68f8a0865d24616f47467cf0"
+  },
+  "students": [
+    {
+      "$oid": "68fb2100daca8fb9b53868cb"
+    }
+  ],
+  "assessments": [
+    {
+      "$oid": "69008e0a2d8ead614da4cb15"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-22T09:20:42.159Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:34:02.183Z"
+  },
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "68f8a30e5d24616f47467d7b"
+  },
+  "name": "Backend Application Development",
+  "level": "Level 4",
+  "teacher": {
+    "$oid": "68f8a0865d24616f47467cf0"
+  },
+  "students": [
+    {
+      "$oid": "68fb2100daca8fb9b53868cb"
+    }
+  ],
+  "assessments": [
+    {
+      "$oid": "69008e232d8ead614da4cb27"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-22T09:25:34.530Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:34:27.974Z"
+  },
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "69008eeb2d8ead614da4cb6d"
+  },
+  "name": "Website Development",
+  "level": "Level 3",
+  "teacher": {
+    "$oid": "69008ecb2d8ead614da4cb60"
+  },
+  "students": [
+    {
+      "$oid": "68f8a12c5d24616f47467d2e"
+    },
+    {
+      "$oid": "68f8a98e441620be18b602d2"
+    }
+  ],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-10-28T09:37:47.928Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T09:38:11.818Z"
+  },
+  "__v": 2
+}]
