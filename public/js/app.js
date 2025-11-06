@@ -100,6 +100,11 @@ class PerformanceTracker {
         document.getElementById('level5Tab').addEventListener('click', () => this.showUsers('level5'));
         document.getElementById('editUserForm').addEventListener('submit', (e) => this.handleEditUser(e));
         document.getElementById('cancelEditUserBtn').addEventListener('click', () => this.hideEditUserModal());
+        
+        // Admin academic year management
+        document.getElementById('addAcademicYearBtn').addEventListener('click', () => this.showAddAcademicYearModal());
+        document.getElementById('addAcademicYearForm').addEventListener('submit', (e) => this.handleAddAcademicYear(e));
+        document.getElementById('cancelAddAcademicYearBtn').addEventListener('click', () => this.hideAddAcademicYearModal());
     }
 
     switchAuthTab(tab) {
@@ -917,6 +922,13 @@ class PerformanceTracker {
 
             if (response.ok) {
                 const data = await response.json();
+                
+                if (!data.academicYears || data.academicYears.length === 0) {
+                    alert('No academic years configured. Please contact administrator.');
+                    this.logout();
+                    return;
+                }
+                
                 const academicYearSelect = document.getElementById('academicYearSelect');
                 const termSelect = document.getElementById('termSelect');
                 
@@ -932,9 +944,15 @@ class PerformanceTracker {
                 termSelect.value = data.currentTerm;
                 
                 document.getElementById('academicYearModal').classList.remove('hidden');
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Error loading academic information');
+                this.logout();
             }
         } catch (error) {
             console.error('Error loading academic info:', error);
+            alert('Error loading academic information. Please try again.');
+            this.logout();
         }
     }
 
@@ -1015,6 +1033,7 @@ class PerformanceTracker {
             }
 
             await this.loadAllUsers();
+            await this.loadAcademicYears();
             this.showUsers('teachers');
         } catch (error) {
             console.error('Error loading admin dashboard:', error);
@@ -1102,6 +1121,9 @@ class PerformanceTracker {
                 <div class="flex space-x-2">
                     <button onclick="app.editUser('${user._id}')" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded text-sm hover:opacity-90 shadow">
                         Edit
+                    </button>
+                    <button onclick="app.resetUserPassword('${user._id}', '${user.firstName} ${user.lastName}')" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded text-sm hover:opacity-90 shadow">
+                        Reset Password
                     </button>
                     <button onclick="app.deleteUser('${user._id}', '${user.firstName} ${user.lastName}')" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded text-sm hover:opacity-90 shadow">
                         Delete
@@ -1206,6 +1228,204 @@ class PerformanceTracker {
         } catch (error) {
             console.error('Error deleting user:', error);
             this.showMessage('Failed to delete user', 'error');
+        }
+    }
+
+    async resetUserPassword(userId, userName) {
+        if (!confirm(`Reset password for ${userName}? A new password will be generated.`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/admin/users/${userId}/reset-password`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Show the new password in an alert
+                alert(`Password reset successfully!\n\nNew Password: ${data.newPassword}\n\nPlease save this password and share it with the user.`);
+                
+                this.showMessage('Password reset successfully', 'success');
+            } else {
+                const data = await response.json();
+                this.showMessage(data.message || 'Failed to reset password', 'error');
+            }
+        } catch (error) {
+            console.error('Error resetting password:', error);
+            this.showMessage('Failed to reset password', 'error');
+        }
+    }
+
+    async loadAcademicYears() {
+        try {
+            const response = await fetch('/api/admin/academic-years', {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                this.academicYears = await response.json();
+                this.displayAcademicYears();
+            }
+        } catch (error) {
+            console.error('Error loading academic years:', error);
+        }
+    }
+
+    displayAcademicYears() {
+        const container = document.getElementById('academicYearsContainer');
+        container.innerHTML = '';
+
+        if (!this.academicYears || this.academicYears.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-center py-4">No academic years configured</p>';
+            return;
+        }
+
+        this.academicYears.forEach(year => {
+            const yearCard = document.createElement('div');
+            yearCard.className = `bg-gray-50 rounded-lg p-4 flex items-center justify-between border ${year.isActive ? 'border-green-500 bg-green-50' : 'border-gray-200'}`;
+            yearCard.innerHTML = `
+                <div class="flex-1">
+                    <h4 class="font-semibold text-lg">${year.year}</h4>
+                    ${year.isActive ? `<p class="text-sm text-green-600">Active</p>` : '<p class="text-sm text-gray-500">Inactive</p>'}
+                </div>
+                <div class="flex space-x-2 items-center">
+                    ${year.isActive ? `
+                        <label class="text-sm text-gray-600">Term:</label>
+                        <select onchange="app.changeActiveTerm('${year._id}', this.value)" class="px-2 py-1 border rounded text-sm bg-white">
+                            <option value="1st Term" ${year.currentTerm === '1st Term' ? 'selected' : ''}>1st Term</option>
+                            <option value="2nd Term" ${year.currentTerm === '2nd Term' ? 'selected' : ''}>2nd Term</option>
+                            <option value="3rd Term" ${year.currentTerm === '3rd Term' ? 'selected' : ''}>3rd Term</option>
+                        </select>
+                    ` : `
+                        <select onchange="app.activateAcademicYear('${year._id}', this.value)" class="px-2 py-1 border rounded text-sm">
+                            <option value="">Set Active</option>
+                            <option value="1st Term">1st Term</option>
+                            <option value="2nd Term">2nd Term</option>
+                            <option value="3rd Term">3rd Term</option>
+                        </select>
+                    `}
+                    ${!year.isActive ? `
+                        <button onclick="app.deleteAcademicYear('${year._id}', '${year.year}')" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded text-sm hover:opacity-90 shadow">
+                            Delete
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+            container.appendChild(yearCard);
+        });
+    }
+
+    showAddAcademicYearModal() {
+        document.getElementById('addAcademicYearModal').classList.remove('hidden');
+    }
+
+    hideAddAcademicYearModal() {
+        document.getElementById('addAcademicYearModal').classList.add('hidden');
+        document.getElementById('addAcademicYearForm').reset();
+    }
+
+    async handleAddAcademicYear(e) {
+        e.preventDefault();
+        const year = document.getElementById('newAcademicYear').value;
+
+        try {
+            const response = await fetch('/api/admin/academic-years', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ year })
+            });
+
+            if (response.ok) {
+                this.hideAddAcademicYearModal();
+                await this.loadAcademicYears();
+                this.showMessage('Academic year added successfully', 'success');
+            } else {
+                const data = await response.json();
+                this.showMessage(data.message || 'Failed to add academic year', 'error');
+            }
+        } catch (error) {
+            console.error('Error adding academic year:', error);
+            this.showMessage('Failed to add academic year', 'error');
+        }
+    }
+
+    async activateAcademicYear(yearId, term) {
+        if (!term) return;
+
+        try {
+            const response = await fetch(`/api/admin/academic-years/${yearId}/activate`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ currentTerm: term })
+            });
+
+            if (response.ok) {
+                await this.loadAcademicYears();
+                this.showMessage('Academic year activated successfully', 'success');
+            } else {
+                const data = await response.json();
+                this.showMessage(data.message || 'Failed to activate academic year', 'error');
+            }
+        } catch (error) {
+            console.error('Error activating academic year:', error);
+            this.showMessage('Failed to activate academic year', 'error');
+        }
+    }
+
+    async changeActiveTerm(yearId, term) {
+        try {
+            const response = await fetch(`/api/admin/academic-years/${yearId}/activate`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ currentTerm: term })
+            });
+
+            if (response.ok) {
+                await this.loadAcademicYears();
+                this.showMessage('Term updated successfully', 'success');
+            } else {
+                const data = await response.json();
+                this.showMessage(data.message || 'Failed to update term', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating term:', error);
+            this.showMessage('Failed to update term', 'error');
+        }
+    }
+
+    async deleteAcademicYear(yearId, year) {
+        if (!confirm(`Delete academic year ${year}?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/admin/academic-years/${yearId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                await this.loadAcademicYears();
+                this.showMessage('Academic year deleted successfully', 'success');
+            } else {
+                const data = await response.json();
+                this.showMessage(data.message || 'Failed to delete academic year', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting academic year:', error);
+            this.showMessage('Failed to delete academic year', 'error');
         }
     }
 }

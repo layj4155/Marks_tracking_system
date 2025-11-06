@@ -1,6 +1,7 @@
 const express = require('express');
 const Course = require('../models/Course');
 const Assessment = require('../models/Assessment');
+const AcademicYear = require('../models/AcademicYear');
 const { auth, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
@@ -12,38 +13,29 @@ router.use(requireRole(['student']));
 // Get available academic years and terms
 router.get('/academic-info', async (req, res) => {
   try {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
-    
-    // Determine current academic year
-    let academicYear;
-    if (currentMonth >= 9) {
-      academicYear = `${currentYear}-${currentYear + 1}`;
-    } else {
-      academicYear = `${currentYear - 1}-${currentYear}`;
+    // Get all academic years from database (sorted ascending)
+    const academicYears = await AcademicYear.find().sort({ year: 1 });
+    const activeYear = academicYears.find(y => y.isActive);
+
+    // If no academic years in database, return error
+    if (academicYears.length === 0) {
+      return res.status(400).json({ 
+        message: 'No academic years configured. Please contact administrator.',
+        academicYears: [],
+        currentAcademicYear: null,
+        currentTerm: null
+      });
     }
 
-    // Determine current term based on month
-    let currentTerm;
-    if (currentMonth >= 9 && currentMonth <= 12) {
-      currentTerm = '1st Term';
-    } else if (currentMonth >= 1 && currentMonth <= 3) {
-      currentTerm = '2nd Term';
-    } else if (currentMonth >= 4 && currentMonth <= 7) {
-      currentTerm = '3rd Term';
-    } else {
-      currentTerm = '1st Term'; // Default for August
-    }
+    // Use active year if exists, otherwise use the most recent year
+    const defaultYear = activeYear || academicYears[academicYears.length - 1];
 
     res.json({
-      currentAcademicYear: academicYear,
-      currentTerm: currentTerm,
-      academicYears: [
-        `${currentYear - 1}-${currentYear}`,
-        `${currentYear}-${currentYear + 1}`,
-        `${currentYear + 1}-${currentYear + 2}`
-      ],
-      terms: ['1st Term', '2nd Term', '3rd Term']
+      currentAcademicYear: defaultYear.year,
+      currentTerm: defaultYear.currentTerm || '1st Term',
+      academicYears: academicYears.map(y => y.year),
+      terms: ['1st Term', '2nd Term', '3rd Term'],
+      isActiveYear: activeYear ? true : false
     });
   } catch (error) {
     console.error('Academic info error:', error);

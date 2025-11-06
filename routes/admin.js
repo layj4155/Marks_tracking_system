@@ -3,6 +3,7 @@ const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const Course = require('../models/Course');
 const Assessment = require('../models/Assessment');
+const AcademicYear = require('../models/AcademicYear');
 const { auth, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
@@ -87,6 +88,32 @@ router.put('/users/:userId', [
   }
 });
 
+// Reset user password
+router.post('/users/:userId/reset-password', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate a random password
+    const newPassword = Math.random().toString(36).slice(-8);
+    
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ 
+      message: 'Password reset successfully',
+      newPassword: newPassword // Send back the new password
+    });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    res.status(500).json({ message: 'Error resetting password' });
+  }
+});
+
 // Delete user
 router.delete('/users/:userId', async (req, res) => {
   try {
@@ -152,6 +179,101 @@ router.get('/dashboard/stats', async (req, res) => {
   } catch (error) {
     console.error('Stats error:', error);
     res.status(500).json({ message: 'Error fetching statistics' });
+  }
+});
+
+// Get all academic years
+router.get('/academic-years', async (req, res) => {
+  try {
+    const years = await AcademicYear.find().sort({ year: 1 });
+    res.json(years);
+  } catch (error) {
+    console.error('Academic years fetch error:', error);
+    res.status(500).json({ message: 'Error fetching academic years' });
+  }
+});
+
+// Create academic year
+router.post('/academic-years', [
+  body('year').notEmpty().withMessage('Academic year is required')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { year } = req.body;
+
+    const existingYear = await AcademicYear.findOne({ year });
+    if (existingYear) {
+      return res.status(400).json({ message: 'Academic year already exists' });
+    }
+
+    const academicYear = new AcademicYear({ year });
+    await academicYear.save();
+
+    res.status(201).json(academicYear);
+  } catch (error) {
+    console.error('Academic year creation error:', error);
+    res.status(500).json({ message: 'Error creating academic year' });
+  }
+});
+
+// Set active academic year and term
+router.put('/academic-years/:yearId/activate', [
+  body('currentTerm').isIn(['1st Term', '2nd Term', '3rd Term']).withMessage('Invalid term')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { yearId } = req.params;
+    const { currentTerm } = req.body;
+
+    // Deactivate all years
+    await AcademicYear.updateMany({}, { isActive: false });
+
+    // Activate selected year with term
+    const academicYear = await AcademicYear.findByIdAndUpdate(
+      yearId,
+      { isActive: true, currentTerm },
+      { new: true }
+    );
+
+    if (!academicYear) {
+      return res.status(404).json({ message: 'Academic year not found' });
+    }
+
+    res.json(academicYear);
+  } catch (error) {
+    console.error('Academic year activation error:', error);
+    res.status(500).json({ message: 'Error activating academic year' });
+  }
+});
+
+// Delete academic year
+router.delete('/academic-years/:yearId', async (req, res) => {
+  try {
+    const { yearId } = req.params;
+
+    const academicYear = await AcademicYear.findById(yearId);
+    if (!academicYear) {
+      return res.status(404).json({ message: 'Academic year not found' });
+    }
+
+    if (academicYear.isActive) {
+      return res.status(400).json({ message: 'Cannot delete active academic year' });
+    }
+
+    await AcademicYear.findByIdAndDelete(yearId);
+
+    res.json({ message: 'Academic year deleted successfully' });
+  } catch (error) {
+    console.error('Academic year deletion error:', error);
+    res.status(500).json({ message: 'Error deleting academic year' });
   }
 });
 

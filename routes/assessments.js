@@ -42,6 +42,42 @@ router.post('/', [
       return res.status(403).json({ message: 'Not authorized to create assessment for this course' });
     }
 
+    // Get all students in the course
+    const courseWithStudents = await Course.findById(courseId).populate('students');
+    
+    // Build marks array - use provided marks or initialize all students with 0
+    let assessmentMarks = [];
+    
+    if (Array.isArray(marks) && marks.length > 0) {
+      // If marks are provided, use them
+      assessmentMarks = marks.map(m => ({
+        student: m.studentId,
+        score: Math.min(Number(m.score || 0), Number(maxMarks)),
+        comment: m.comment || ''
+      }));
+      
+      // Add any missing students with 0 marks
+      const markedStudentIds = marks.map(m => m.studentId);
+      const unmarkedStudents = courseWithStudents.students.filter(
+        s => !markedStudentIds.includes(s._id.toString())
+      );
+      
+      unmarkedStudents.forEach(student => {
+        assessmentMarks.push({
+          student: student._id,
+          score: 0,
+          comment: 'Marks pending'
+        });
+      });
+    } else {
+      // No marks provided, initialize all students with 0
+      assessmentMarks = courseWithStudents.students.map(student => ({
+        student: student._id,
+        score: 0,
+        comment: 'Marks pending'
+      }));
+    }
+    
     const assessment = new Assessment({
       name,
       type,
@@ -49,13 +85,7 @@ router.post('/', [
       maxMarks,
       academicYear,
       term,
-      marks: Array.isArray(marks)
-        ? marks.map(m => ({
-            student: m.studentId,
-            score: Math.min(Number(m.score || 0), Number(maxMarks)),
-            comment: m.comment || ''
-          }))
-        : []
+      marks: assessmentMarks
     });
 
     await assessment.save();

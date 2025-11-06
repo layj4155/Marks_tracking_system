@@ -2,6 +2,8 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
+const Course = require('../models/Course');
+const Assessment = require('../models/Assessment');
 const { auth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -66,6 +68,50 @@ router.post('/register', [
     });
 
     await user.save();
+
+    // Auto-enroll students in courses matching their level
+    if (role === 'student' && level) {
+      try {
+        // Find all courses for this level
+        const courses = await Course.find({ level });
+        
+        if (courses.length > 0) {
+          const courseIds = courses.map(c => c._id);
+          
+          // Add student to all courses
+          await Course.updateMany(
+            { _id: { $in: courseIds } },
+            { $addToSet: { students: user._id } }
+          );
+          
+          // Add student to user's courses
+          user.courses = courseIds;
+          await user.save();
+          
+          // Add student to existing assessments with 0 marks
+          for (const course of courses) {
+            const assessments = await Assessment.find({ course: course._id });
+            
+            for (const assessment of assessments) {
+              // Check if student is not already in the assessment
+              const existingMark = assessment.marks.find(m => m.student.toString() === user._id.toString());
+              
+              if (!existingMark) {
+                assessment.marks.push({
+                  student: user._id,
+                  score: 0,
+                  comment: 'Newly enrolled - marks pending'
+                });
+                await assessment.save();
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error auto-enrolling student:', error);
+        // Continue even if auto-enrollment fails
+      }
+    }
 
     const token = jwt.sign(
       { userId: user._id },
