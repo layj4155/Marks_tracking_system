@@ -20,21 +20,35 @@ class PerformanceTracker {
         document.getElementById('regRole').addEventListener('change', (e) => {
             const levelField = document.getElementById('levelField');
             const teacherWordField = document.getElementById('teacherWordField');
+            const adminWordField = document.getElementById('adminWordField');
             if (e.target.value === 'student') {
                 levelField.classList.remove('hidden');
                 teacherWordField.classList.add('hidden');
+                adminWordField.classList.add('hidden');
                 document.getElementById('regLevel').required = true;
                 document.getElementById('regTeacherWord').required = false;
+                document.getElementById('regAdminWord').required = false;
             } else if (e.target.value === 'teacher') {
                 levelField.classList.add('hidden');
                 teacherWordField.classList.remove('hidden');
+                adminWordField.classList.add('hidden');
                 document.getElementById('regLevel').required = false;
                 document.getElementById('regTeacherWord').required = true;
+                document.getElementById('regAdminWord').required = false;
+            } else if (e.target.value === 'admin') {
+                levelField.classList.add('hidden');
+                teacherWordField.classList.add('hidden');
+                adminWordField.classList.remove('hidden');
+                document.getElementById('regLevel').required = false;
+                document.getElementById('regTeacherWord').required = false;
+                document.getElementById('regAdminWord').required = true;
             } else {
                 levelField.classList.add('hidden');
                 teacherWordField.classList.add('hidden');
+                adminWordField.classList.add('hidden');
                 document.getElementById('regLevel').required = false;
                 document.getElementById('regTeacherWord').required = false;
+                document.getElementById('regAdminWord').required = false;
             }
         });
 
@@ -45,6 +59,7 @@ class PerformanceTracker {
         // Logout buttons
         document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
         document.getElementById('studentLogoutBtn').addEventListener('click', () => this.logout());
+        document.getElementById('adminLogoutBtn').addEventListener('click', () => this.logout());
 
         // Level cards
         document.getElementById('level3Card').addEventListener('click', () => this.showLevelDetails('Level 3'));
@@ -76,6 +91,15 @@ class PerformanceTracker {
         document.getElementById('forgotPasswordLink').addEventListener('click', (e) => this.showForgotPasswordModal(e));
         document.getElementById('forgotPasswordForm').addEventListener('submit', (e) => this.handleForgotPassword(e));
         document.getElementById('cancelForgotPasswordBtn').addEventListener('click', () => this.hideForgotPasswordModal());
+
+        // Admin user management
+        document.getElementById('adminsTab').addEventListener('click', () => this.showUsers('admins'));
+        document.getElementById('teachersTab').addEventListener('click', () => this.showUsers('teachers'));
+        document.getElementById('level3Tab').addEventListener('click', () => this.showUsers('level3'));
+        document.getElementById('level4Tab').addEventListener('click', () => this.showUsers('level4'));
+        document.getElementById('level5Tab').addEventListener('click', () => this.showUsers('level5'));
+        document.getElementById('editUserForm').addEventListener('submit', (e) => this.handleEditUser(e));
+        document.getElementById('cancelEditUserBtn').addEventListener('click', () => this.hideEditUserModal());
     }
 
     switchAuthTab(tab) {
@@ -129,15 +153,22 @@ class PerformanceTracker {
 
     async handleRegister(e) {
         e.preventDefault();
+        const role = document.getElementById('regRole').value;
         const formData = {
             firstName: document.getElementById('regFirstName').value,
             lastName: document.getElementById('regLastName').value,
             email: document.getElementById('regEmail').value,
             password: document.getElementById('regPassword').value,
-            role: document.getElementById('regRole').value,
-            level: document.getElementById('regLevel').value,
-            teacherWord: document.getElementById('regTeacherWord').value
+            role: role
         };
+
+        if (role === 'student') {
+            formData.level = document.getElementById('regLevel').value;
+        } else if (role === 'teacher') {
+            formData.teacherWord = document.getElementById('regTeacherWord').value;
+        } else if (role === 'admin') {
+            formData.adminWord = document.getElementById('regAdminWord').value;
+        }
 
         try {
             const response = await fetch('/api/auth/register', {
@@ -153,9 +184,12 @@ class PerformanceTracker {
                 this.currentUser = data.user;
                 this.showDashboard();
             } else {
-                this.showMessage(data.message || 'Registration failed', 'error');
+                console.error('Registration error:', data);
+                const errorMessage = data.message || (data.errors && data.errors.length > 0 ? data.errors[0].msg : 'Registration failed');
+                this.showMessage(errorMessage, 'error');
             }
         } catch (error) {
+            console.error('Registration exception:', error);
             this.showMessage('Registration failed. Please try again.', 'error');
         }
     }
@@ -184,8 +218,15 @@ class PerformanceTracker {
     showDashboard() {
         document.getElementById('authPage').classList.add('hidden');
         
-        // Show academic year selection first
-        this.showAcademicYearSelection();
+        // Admin doesn't need academic year selection
+        if (this.currentUser.role === 'admin') {
+            document.getElementById('adminDashboard').classList.remove('hidden');
+            document.getElementById('adminName').textContent = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+            this.loadAdminDashboard();
+        } else {
+            // Show academic year selection for teachers and students
+            this.showAcademicYearSelection();
+        }
     }
 
     async loadTeacherDashboard() {
@@ -527,6 +568,7 @@ class PerformanceTracker {
         assessment.marks.forEach(mark => {
             const row = document.createElement('div');
             row.className = 'grid grid-cols-1 md:grid-cols-4 gap-2 items-center bg-white p-2 rounded border';
+            row.dataset.studentId = mark.student._id;
             row.innerHTML = `
                 <div class="font-medium">${mark.student.firstName} ${mark.student.lastName}</div>
                 <input type="number" min="0" step="0.01" value="${mark.score}" class="score-input px-2 py-1 border rounded" />
@@ -544,7 +586,7 @@ class PerformanceTracker {
     async handleEditAssessment(e) {
         e.preventDefault();
         const marks = Array.from(document.querySelectorAll('#editAssessmentStudentsContainer .grid')).map(row => ({
-            studentId: row.querySelector('.font-medium').textContent.split(' ')[0], // This is simplified - you might want to store student ID in data attribute
+            studentId: row.dataset.studentId,
             score: parseFloat(row.querySelector('.score-input').value || '0'),
             comment: row.querySelector('.comment-input').value || ''
         }));
@@ -686,6 +728,102 @@ class PerformanceTracker {
         return texts[color] || 'Unknown';
     }
 
+    async viewStudentMarks(courseId, studentId, studentName) {
+        try {
+            const response = await fetch(`/api/teachers/courses/${courseId}/students`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (!response.ok) return;
+
+            const students = await response.json();
+            const student = students.find(s => s._id === studentId);
+
+            if (!student) return;
+
+            // Fetch all assessments for this course
+            const assessmentsResponse = await fetch(`/api/assessments/course/${courseId}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (!assessmentsResponse.ok) return;
+
+            const assessments = await assessmentsResponse.json();
+
+            // Calculate total marks
+            let totalObtained = 0;
+            let totalMax = 0;
+            const marksData = [];
+
+            assessments.forEach(assessment => {
+                const studentMark = assessment.marks.find(m => m.student._id === studentId);
+                if (studentMark) {
+                    totalObtained += studentMark.score;
+                    totalMax += assessment.maxMarks;
+                    marksData.push({
+                        name: assessment.name,
+                        type: assessment.type,
+                        score: studentMark.score,
+                        maxMarks: assessment.maxMarks,
+                        percentage: Math.round((studentMark.score / assessment.maxMarks) * 100 * 100) / 100,
+                        comment: studentMark.comment || 'No comment',
+                        date: new Date(assessment.createdAt).toLocaleDateString()
+                    });
+                }
+            });
+
+            const overallAverage = totalMax > 0 ? Math.round((totalObtained / totalMax) * 100 * 100) / 100 : 0;
+
+            // Display marks in modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold gradient-text">${studentName} - Detailed Marks</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="bg-gradient-primary text-white rounded-lg p-4 mb-6">
+                        <div class="text-center">
+                            <div class="text-4xl font-bold mb-2">${overallAverage}%</div>
+                            <div class="text-lg">Overall Average</div>
+                            <div class="text-sm mt-2">${totalObtained} / ${totalMax} total marks</div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-lg">Assessment Details:</h4>
+                        ${marksData.length > 0 ? marksData.map(mark => `
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h5 class="font-semibold text-lg">${mark.name}</h5>
+                                        <p class="text-sm text-gray-600">${mark.type} • ${mark.date}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-bold gradient-text">${mark.percentage}%</div>
+                                        <div class="text-sm text-gray-600">${mark.score} / ${mark.maxMarks}</div>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <p class="text-sm"><span class="font-medium">Comment:</span> ${mark.comment}</p>
+                                </div>
+                            </div>
+                        `).join('') : '<p class="text-gray-500 italic">No assessments completed yet</p>'}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        } catch (error) {
+            console.error('Error viewing student marks:', error);
+        }
+    }
+
     async loadStudentDashboard() {
         try {
             const response = await fetch(`/api/students/dashboard?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
@@ -755,6 +893,7 @@ class PerformanceTracker {
         document.getElementById('authPage').classList.remove('hidden');
         document.getElementById('teacherDashboard').classList.add('hidden');
         document.getElementById('studentDashboard').classList.add('hidden');
+        document.getElementById('adminDashboard').classList.add('hidden');
         document.getElementById('levelDetails').classList.add('hidden');
     }
 
@@ -813,10 +952,14 @@ class PerformanceTracker {
             document.getElementById('teacherDashboard').classList.remove('hidden');
             document.getElementById('teacherName').textContent = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
             this.loadTeacherDashboard();
-        } else {
+        } else if (this.currentUser.role === 'student') {
             document.getElementById('studentDashboard').classList.remove('hidden');
             document.getElementById('studentName').textContent = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
             this.loadStudentDashboard();
+        } else if (this.currentUser.role === 'admin') {
+            document.getElementById('adminDashboard').classList.remove('hidden');
+            document.getElementById('adminName').textContent = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+            this.loadAdminDashboard();
         }
     }
 
@@ -854,6 +997,215 @@ class PerformanceTracker {
         } catch (error) {
             messageDiv.textContent = 'Failed to send reset link. Please try again.';
             messageDiv.className = 'mt-4 text-center text-sm text-red-600';
+        }
+    }
+
+    async loadAdminDashboard() {
+        try {
+            const response = await fetch('/api/admin/dashboard/stats', {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const stats = await response.json();
+                document.getElementById('totalAdmins').textContent = stats.totalAdmins;
+                document.getElementById('totalTeachers').textContent = stats.totalTeachers;
+                document.getElementById('totalStudents').textContent = stats.totalStudents;
+                document.getElementById('totalCourses').textContent = stats.totalCourses;
+            }
+
+            await this.loadAllUsers();
+            this.showUsers('teachers');
+        } catch (error) {
+            console.error('Error loading admin dashboard:', error);
+        }
+    }
+
+    async loadAllUsers() {
+        try {
+            const response = await fetch('/api/admin/users', {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                this.allUsers = await response.json();
+            }
+        } catch (error) {
+            console.error('Error loading users:', error);
+        }
+    }
+
+    showUsers(category) {
+        const tabs = ['adminsTab', 'teachersTab', 'level3Tab', 'level4Tab', 'level5Tab'];
+        tabs.forEach(tab => {
+            const element = document.getElementById(tab);
+            if (element) {
+                element.classList.remove('border-primary', 'text-primary');
+                element.classList.add('border-transparent');
+            }
+        });
+
+        let activeTab;
+        let users = [];
+
+        switch(category) {
+            case 'admins':
+                activeTab = 'adminsTab';
+                users = this.allUsers?.admins || [];
+                break;
+            case 'teachers':
+                activeTab = 'teachersTab';
+                users = this.allUsers?.teachers || [];
+                break;
+            case 'level3':
+                activeTab = 'level3Tab';
+                users = this.allUsers?.students?.['Level 3'] || [];
+                break;
+            case 'level4':
+                activeTab = 'level4Tab';
+                users = this.allUsers?.students?.['Level 4'] || [];
+                break;
+            case 'level5':
+                activeTab = 'level5Tab';
+                users = this.allUsers?.students?.['Level 5'] || [];
+                break;
+        }
+
+        const activeElement = document.getElementById(activeTab);
+        if (activeElement) {
+            activeElement.classList.add('border-primary', 'text-primary');
+            activeElement.classList.remove('border-transparent');
+        }
+
+        this.displayUsers(users);
+    }
+
+    displayUsers(users) {
+        const container = document.getElementById('usersContainer');
+        container.innerHTML = '';
+
+        if (!users || users.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-center py-8">No users found</p>';
+            return;
+        }
+
+        users.forEach(user => {
+            const userCard = document.createElement('div');
+            userCard.className = 'bg-gray-50 rounded-lg p-4 flex items-center justify-between border border-gray-200 hover:shadow-md transition';
+            userCard.innerHTML = `
+                <div class="flex-1">
+                    <h4 class="font-semibold text-lg">${user.firstName} ${user.lastName}</h4>
+                    <p class="text-sm text-gray-600">${user.email}</p>
+                    ${user.level ? `<p class="text-sm text-gray-600">Level: ${user.level}</p>` : ''}
+                    ${user.courses && user.courses.length > 0 ? `<p class="text-sm text-gray-600">Courses: ${user.courses.length}</p>` : ''}
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="app.editUser('${user._id}')" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded text-sm hover:opacity-90 shadow">
+                        Edit
+                    </button>
+                    <button onclick="app.deleteUser('${user._id}', '${user.firstName} ${user.lastName}')" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded text-sm hover:opacity-90 shadow">
+                        Delete
+                    </button>
+                </div>
+            `;
+            container.appendChild(userCard);
+        });
+    }
+
+    async editUser(userId) {
+        try {
+            const response = await fetch(`/api/admin/users/${userId}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const user = await response.json();
+                this.currentEditingUser = userId;
+                
+                document.getElementById('editFirstName').value = user.firstName;
+                document.getElementById('editLastName').value = user.lastName;
+                document.getElementById('editEmail').value = user.email;
+                
+                if (user.role === 'student') {
+                    document.getElementById('editLevelField').classList.remove('hidden');
+                    document.getElementById('editLevel').value = user.level;
+                } else {
+                    document.getElementById('editLevelField').classList.add('hidden');
+                }
+                
+                document.getElementById('editUserModal').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error loading user:', error);
+        }
+    }
+
+    hideEditUserModal() {
+        document.getElementById('editUserModal').classList.add('hidden');
+        document.getElementById('editUserForm').reset();
+    }
+
+    async handleEditUser(e) {
+        e.preventDefault();
+        
+        const updates = {
+            firstName: document.getElementById('editFirstName').value,
+            lastName: document.getElementById('editLastName').value,
+            email: document.getElementById('editEmail').value
+        };
+
+        const levelField = document.getElementById('editLevelField');
+        if (!levelField.classList.contains('hidden')) {
+            updates.level = document.getElementById('editLevel').value;
+        }
+
+        try {
+            const response = await fetch(`/api/admin/users/${this.currentEditingUser}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(updates)
+            });
+
+            if (response.ok) {
+                this.hideEditUserModal();
+                await this.loadAllUsers();
+                await this.loadAdminDashboard();
+                this.showMessage('User updated successfully', 'success');
+            } else {
+                const data = await response.json();
+                this.showMessage(data.message || 'Failed to update user', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating user:', error);
+            this.showMessage('Failed to update user', 'error');
+        }
+    }
+
+    async deleteUser(userId, userName) {
+        if (!confirm(`Are you sure you want to delete ${userName}? This action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                await this.loadAllUsers();
+                await this.loadAdminDashboard();
+                this.showMessage('User deleted successfully', 'success');
+            } else {
+                const data = await response.json();
+                this.showMessage(data.message || 'Failed to delete user', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            this.showMessage('Failed to delete user', 'error');
         }
     }
 }

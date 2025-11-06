@@ -165,6 +165,50 @@ router.get('/:assessmentId/marks', async (req, res) => {
   }
 });
 
+// Update all marks for an assessment
+router.put('/:assessmentId/marks', [
+  body('marks').isArray().withMessage('Marks must be an array'),
+  body('marks.*.studentId').isMongoId().withMessage('Valid student ID is required'),
+  body('marks.*.score').isNumeric().isFloat({ min: 0 }).withMessage('Score must be a non-negative number'),
+  body('marks.*.comment').optional().isString().trim()
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { assessmentId } = req.params;
+    const { marks } = req.body;
+
+    const assessment = await Assessment.findById(assessmentId)
+      .populate('course');
+
+    if (!assessment) {
+      return res.status(404).json({ message: 'Assessment not found' });
+    }
+
+    // Verify teacher owns the course
+    if (assessment.course.teacher.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to update marks for this assessment' });
+    }
+
+    // Update marks
+    assessment.marks = marks.map(markData => ({
+      student: markData.studentId,
+      score: Math.min(Number(markData.score || 0), Number(assessment.maxMarks)),
+      comment: markData.comment || ''
+    }));
+
+    await assessment.save();
+
+    res.json({ message: 'Marks updated successfully', assessment });
+  } catch (error) {
+    console.error('Marks update error:', error);
+    res.status(500).json({ message: 'Error updating marks' });
+  }
+});
+
 // Update a specific mark
 router.put('/:assessmentId/marks/:studentId', [
   body('score').isNumeric().isFloat({ min: 0 }).withMessage('Score must be a non-negative number'),

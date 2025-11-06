@@ -236,7 +236,8 @@ router.get('/courses/:courseId/students', async (req, res) => {
 
     // Calculate average marks for each student
     const studentsWithPerformance = course.students.map(student => {
-      let totalMarks = 0;
+      let totalObtainedMarks = 0;
+      let totalMaxMarks = 0;
       let totalAssessments = 0;
 
       course.assessments.forEach(assessment => {
@@ -244,12 +245,13 @@ router.get('/courses/:courseId/students', async (req, res) => {
           mark.student._id.toString() === student._id.toString()
         );
         if (studentMark) {
-          totalMarks += studentMark.score;
+          totalObtainedMarks += studentMark.score;
+          totalMaxMarks += assessment.maxMarks;
           totalAssessments++;
         }
       });
 
-      const average = totalAssessments > 0 ? totalMarks / totalAssessments : 0;
+      const average = totalMaxMarks > 0 ? (totalObtainedMarks / totalMaxMarks) * 100 : 0;
       
       // Determine color based on average
       let color = 'red'; // Below 60%

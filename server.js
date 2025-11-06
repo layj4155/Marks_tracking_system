@@ -27,6 +27,7 @@ app.use('/api/teachers', require('./routes/teachers'));
 app.use('/api/students', require('./routes/students'));
 app.use('/api/courses', require('./routes/courses'));
 app.use('/api/assessments', require('./routes/assessments'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Serve static files
 app.get('/', (req, res) => {

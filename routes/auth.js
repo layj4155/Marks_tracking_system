@@ -12,11 +12,17 @@ router.post('/register', [
   body('lastName').trim().notEmpty().withMessage('Last name is required'),
   body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('role').isIn(['teacher', 'student']).withMessage('Role must be teacher or student'),
+  body('role').isIn(['teacher', 'student', 'admin']).withMessage('Role must be teacher, student, or admin'),
   body('level').optional().isIn(['Level 3', 'Level 4', 'Level 5']).withMessage('Invalid level'),
   body('teacherWord').optional().trim().custom((value, { req }) => {
     if (req.body.role === 'teacher' && !value) {
       throw new Error('Teacher authorization word is required for teacher registration');
+    }
+    return true;
+  }),
+  body('adminWord').optional().trim().custom((value, { req }) => {
+    if (req.body.role === 'admin' && !value) {
+      throw new Error('Admin authorization word is required for admin registration');
     }
     return true;
   })
@@ -27,7 +33,7 @@ router.post('/register', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { firstName, lastName, email, password, role, level, teacherWord } = req.body;
+    const { firstName, lastName, email, password, role, level, teacherWord, adminWord } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -41,8 +47,13 @@ router.post('/register', [
     }
 
     // Validate teacher security word
-    if (role === 'teacher' && teacherWord !== 'Trainer') {
+    if (role === 'teacher' && teacherWord !== 'XWZ') {
       return res.status(400).json({ message: 'Invalid teacher authorization word' });
+    }
+
+    // Validate admin security word
+    if (role === 'admin' && adminWord !== 'ADMIN2025') {
+      return res.status(400).json({ message: 'Invalid admin authorization word' });
     }
 
     const user = new User({
