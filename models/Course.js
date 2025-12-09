@@ -28,4 +28,10 @@ const courseSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Indexes for common queries
+courseSchema.index({ level: 1 });
+courseSchema.index({ teacher: 1 });
+courseSchema.index({ students: 1 });
+courseSchema.index({ level: 1, teacher: 1 });
+
 module.exports = mongoose.model('Course', courseSchema);

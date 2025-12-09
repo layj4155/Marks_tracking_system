@@ -13,7 +13,8 @@ router.get('/students', requireRole(['teacher']), async (req, res) => {
   try {
     const students = await User.find({ role: 'student' })
       .select('firstName lastName email level')
-      .sort({ lastName: 1, firstName: 1 });
+      .sort({ lastName: 1, firstName: 1 })
+      .lean();
 
     res.json(students);
   } catch (error) {

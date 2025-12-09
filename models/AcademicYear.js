@@ -19,4 +19,7 @@ const academicYearSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Indexes for common queries (year already has unique index)
+academicYearSchema.index({ isActive: 1 });
+
 module.exports = mongoose.model('AcademicYear', academicYearSchema);

@@ -52,4 +52,10 @@ const assessmentSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Indexes for common queries
+assessmentSchema.index({ course: 1 });
+assessmentSchema.index({ 'marks.student': 1 });
+assessmentSchema.index({ academicYear: 1, term: 1 });
+assessmentSchema.index({ course: 1, academicYear: 1, term: 1 });
+
 module.exports = mongoose.model('Assessment', assessmentSchema);

@@ -3,6 +3,7 @@ const { body, validationResult } = require('express-validator');
 const Assessment = require('../models/Assessment');
 const Course = require('../models/Course');
 const { auth, requireRole } = require('../middleware/auth');
+const { notifyMarksPosted, notifyMarksUpdated, notifyAssessmentCreated } = require('../services/notifications');
 
 const router = express.Router();
 
@@ -94,6 +95,14 @@ router.post('/', [
     course.assessments.push(assessment._id);
     await course.save();
 
+    // Notify students about new assessment
+    const studentIds = courseWithStudents.students.map(s => s._id);
+    if (studentIds.length > 0) {
+      notifyAssessmentCreated(studentIds, course, assessment).catch(err => 
+        console.error('Error sending assessment notifications:', err)
+      );
+    }
+
     res.status(201).json(assessment);
   } catch (error) {
     console.error('Assessment creation error:', error);
@@ -107,7 +116,7 @@ router.get('/course/:courseId', async (req, res) => {
     const { courseId } = req.params;
 
     // Verify course exists and teacher owns it
-    const course = await Course.findById(courseId);
+    const course = await Course.findById(courseId).lean();
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
     }
@@ -117,7 +126,8 @@ router.get('/course/:courseId', async (req, res) => {
     }
 
     const assessments = await Assessment.find({ course: courseId })
-      .populate('marks.student', 'firstName lastName email');
+      .populate('marks.student', 'firstName lastName email')
+      .lean();
 
     res.json(assessments);
   } catch (error) {
@@ -162,6 +172,12 @@ router.post('/:assessmentId/marks', [
     }));
 
     await assessment.save();
+
+    // Notify students about their marks
+    const studentIds = marks.map(m => m.studentId);
+    notifyMarksPosted(studentIds, assessment.course, assessment, assessment.marks).catch(err =>
+      console.error('Error sending marks notifications:', err)
+    );
 
     res.json({ message: 'Marks updated successfully', assessment });
   } catch (error) {
@@ -278,6 +294,11 @@ router.put('/:assessmentId/marks/:studentId', [
     assessment.marks[markIndex].comment = comment || '';
 
     await assessment.save();
+
+    // Notify student about updated mark
+    notifyMarksUpdated(studentId, assessment.course, assessment, score).catch(err =>
+      console.error('Error sending mark update notification:', err)
+    );
 
     res.json({ message: 'Mark updated successfully' });
   } catch (error) {

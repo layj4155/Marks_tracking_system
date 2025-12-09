@@ -14,7 +14,7 @@ router.use(requireRole(['student']));
 router.get('/academic-info', async (req, res) => {
   try {
     // Get all academic years from database (sorted ascending)
-    const academicYears = await AcademicYear.find().sort({ year: 1 });
+    const academicYears = await AcademicYear.find().sort({ year: 1 }).lean();
     const activeYear = academicYears.find(y => y.isActive);
 
     // If no academic years in database, return error
@@ -53,7 +53,8 @@ router.get('/dashboard', async (req, res) => {
     }
 
     const courses = await Course.find({ students: req.user._id })
-      .populate('assessments');
+      .populate('assessments')
+      .lean();
 
     const coursesWithPerformance = await Promise.all(courses.map(async (course) => {
       // Get assessments for specific academic year and term
@@ -61,7 +62,7 @@ router.get('/dashboard', async (req, res) => {
         course: course._id,
         academicYear: academicYear,
         term: term
-      }).populate('marks.student', 'firstName lastName');
+      }).populate('marks.student', 'firstName lastName').lean();
 
       // Calculate student's performance in this course
       let totalMarks = 0;
@@ -119,7 +120,7 @@ router.get('/courses/:courseId', async (req, res) => {
   try {
     const { courseId } = req.params;
 
-    const course = await Course.findById(courseId);
+    const course = await Course.findById(courseId).lean();
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
     }
@@ -130,7 +131,8 @@ router.get('/courses/:courseId', async (req, res) => {
     }
 
     const assessments = await Assessment.find({ course: courseId })
-      .populate('marks.student', 'firstName lastName');
+      .populate('marks.student', 'firstName lastName')
+      .lean();
 
     // Calculate student's performance
     let totalMarks = 0;

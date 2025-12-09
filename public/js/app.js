@@ -74,6 +74,7 @@ class PerformanceTracker {
         // Assessment management
         document.getElementById('assessmentForm').addEventListener('submit', (e) => this.handleCreateAssessment(e));
         document.getElementById('cancelAssessmentBtn').addEventListener('click', () => this.hideAssessmentModal());
+        document.getElementById('closeAssessmentBtn').addEventListener('click', () => this.hideAssessmentModal());
 
         // Add student modal
         document.getElementById('addStudentForm').addEventListener('submit', (e) => this.handleAddStudentToCourse(e));
@@ -289,16 +290,16 @@ class PerformanceTracker {
                 <div class="flex items-center justify-between mb-2">
                     <h3 class="text-lg font-semibold text-gray-800">${course.name}</h3>
                     <div class="flex space-x-2">
-                        <button onclick="app.showCourseStudents('${course._id}', '${course.name}')" 
-                                class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 view-students-btn" 
+                                data-course-id="${course._id}" data-course-name="${course.name}">
                             View Students (${course.students.length})
                         </button>
-                        <button onclick="app.showAssessmentManagement('${course._id}', '${course.name}')" 
-                                class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
+                        <button class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 manage-assessments-btn" 
+                                data-course-id="${course._id}" data-course-name="${course.name}">
                             Manage Assessments
                         </button>
-                        <button onclick="app.deleteCourse('${course._id}')" 
-                                class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">
+                        <button class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 delete-course-btn" 
+                                data-course-id="${course._id}">
                             Delete
                         </button>
                     </div>
@@ -306,6 +307,30 @@ class PerformanceTracker {
                 <p class="text-gray-600 text-sm">${course.assessments.length} assessments</p>
             `;
             coursesList.appendChild(courseCard);
+        });
+
+        // Add event listeners
+        document.querySelectorAll('.view-students-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const courseId = btn.dataset.courseId;
+                const courseName = btn.dataset.courseName;
+                this.showCourseStudents(courseId, courseName);
+            });
+        });
+
+        document.querySelectorAll('.manage-assessments-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const courseId = btn.dataset.courseId;
+                const courseName = btn.dataset.courseName;
+                this.showAssessmentManagement(courseId, courseName);
+            });
+        });
+
+        document.querySelectorAll('.delete-course-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const courseId = btn.dataset.courseId;
+                this.deleteCourse(courseId);
+            });
         });
     }
 
@@ -350,6 +375,8 @@ class PerformanceTracker {
 
     showAssessmentModal(courseId) {
         this.currentCourse = courseId;
+        // Close the assessment management modal first
+        document.getElementById('assessmentManagementModal').classList.add('hidden');
         document.getElementById('assessmentModal').classList.remove('hidden');
         this.populateAssessmentStudents();
     }
@@ -357,6 +384,8 @@ class PerformanceTracker {
     hideAssessmentModal() {
         document.getElementById('assessmentModal').classList.add('hidden');
         document.getElementById('assessmentForm').reset();
+        // Reopen the assessment management modal
+        document.getElementById('assessmentManagementModal').classList.remove('hidden');
     }
 
     async handleCreateAssessment(e) {
@@ -537,13 +566,28 @@ class PerformanceTracker {
                         <p class="text-sm text-gray-600">${assessment.type} • Max: ${assessment.maxMarks} • Date: ${date}</p>
                     </div>
                     <div class="flex space-x-2">
-                        <button onclick="app.editAssessment('${assessment._id}')" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
-                        <button onclick="app.deleteAssessment('${assessment._id}')" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">Delete</button>
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 edit-assessment-btn" data-assessment-id="${assessment._id}">Edit</button>
+                        <button class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 delete-assessment-btn" data-assessment-id="${assessment._id}">Delete</button>
                     </div>
                 </div>
                 <div class="text-sm text-gray-600">${assessment.marks.length} students marked</div>
             `;
             container.appendChild(card);
+        });
+
+        // Add event listeners for edit and delete buttons
+        container.querySelectorAll('.edit-assessment-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const assessmentId = btn.dataset.assessmentId;
+                this.editAssessment(assessmentId);
+            });
+        });
+
+        container.querySelectorAll('.delete-assessment-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const assessmentId = btn.dataset.assessmentId;
+                this.deleteAssessment(assessmentId);
+            });
         });
     }
 
@@ -561,6 +605,8 @@ class PerformanceTracker {
             document.getElementById('editMaxMarks').value = assessment.maxMarks;
             
             this.populateEditAssessmentStudents(assessment);
+            // Close the assessment management modal first
+            document.getElementById('assessmentManagementModal').classList.add('hidden');
             document.getElementById('editAssessmentModal').classList.remove('hidden');
             this.currentEditingAssessment = assessmentId;
         } catch (_) {}
@@ -586,6 +632,8 @@ class PerformanceTracker {
 
     hideEditAssessmentModal() {
         document.getElementById('editAssessmentModal').classList.add('hidden');
+        // Reopen the assessment management modal
+        document.getElementById('assessmentManagementModal').classList.remove('hidden');
     }
 
     async handleEditAssessment(e) {
@@ -648,22 +696,28 @@ class PerformanceTracker {
 
             if (response.ok) {
                 const students = await response.json();
+                console.log('Students data:', students);
                 this.displayStudents(students, courseId, courseName);
+            } else {
+                const error = await response.json();
+                console.error('Error loading students:', error);
+                this.showMessage('Failed to load students', 'error');
             }
         } catch (error) {
             console.error('Error loading students:', error);
+            this.showMessage('Error loading students', 'error');
         }
     }
 
     displayStudents(students, courseId, courseName) {
         // Create a modal for students
         const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 student-modal';
         modal.innerHTML = `
             <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-2xl font-bold gradient-text">${courseName} - Students</h3>
-                    <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                    <button class="text-gray-500 hover:text-gray-700 close-modal-btn" title="Close">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -671,8 +725,7 @@ class PerformanceTracker {
                 </div>
                 
                 <div class="mb-4">
-                    <button onclick="app.showAddStudentModal('${courseId}')" 
-                            class="bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90">
+                    <button class="bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90 add-student-modal-btn" data-course-id="${courseId}">
                         Add Student
                     </button>
                 </div>
@@ -700,8 +753,8 @@ class PerformanceTracker {
                                     </td>
                                     <td class="border border-gray-300 px-4 py-2">${student.totalAssessments}</td>
                                     <td class="border border-gray-300 px-4 py-2">
-                                        <button onclick="app.viewStudentMarks('${courseId}', '${student._id}', '${student.firstName} ${student.lastName}')" 
-                                                class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">
+                                        <button class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600 view-marks-btn" 
+                                                data-course-id="${courseId}" data-student-id="${student._id}" data-student-name="${student.firstName} ${student.lastName}">
                                             View Marks
                                         </button>
                                     </td>
@@ -713,6 +766,26 @@ class PerformanceTracker {
             </div>
         `;
         document.body.appendChild(modal);
+
+        // Add event listeners
+        modal.querySelector('.close-modal-btn').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        modal.querySelector('.add-student-modal-btn').addEventListener('click', (e) => {
+            const cid = e.target.dataset.courseId;
+            modal.remove();
+            this.showAddStudentModal(cid);
+        });
+
+        modal.querySelectorAll('.view-marks-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const cid = btn.dataset.courseId;
+                const sid = btn.dataset.studentId;
+                const sname = btn.dataset.studentName;
+                this.viewStudentMarks(cid, sid, sname);
+            });
+        });
     }
 
     getStatusColor(color) {
@@ -785,13 +858,13 @@ class PerformanceTracker {
             modal.innerHTML = `
                 <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold gradient-text">${studentName} - Detailed Marks</h3>
-                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
+                         <h3 class="text-2xl font-bold gradient-text">${studentName} - Detailed Marks</h3>
+                         <button class="close-modal-btn close-marks-btn" title="Close">
+                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                             </svg>
+                         </button>
+                     </div>
 
                     <div class="bg-gradient-primary text-white rounded-lg p-4 mb-6">
                         <div class="text-center">
@@ -823,11 +896,16 @@ class PerformanceTracker {
                     </div>
                 </div>
             `;
-            document.body.appendChild(modal);
-        } catch (error) {
-            console.error('Error viewing student marks:', error);
-        }
-    }
+             document.body.appendChild(modal);
+             
+             // Add close button event listener
+             modal.querySelector('.close-marks-btn').addEventListener('click', () => {
+                 modal.remove();
+             });
+            } catch (error) {
+             console.error('Error viewing student marks:', error);
+            }
+            }
 
     async loadStudentDashboard() {
         try {

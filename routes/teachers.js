@@ -16,7 +16,7 @@ router.use(requireRole(['teacher']));
 router.get('/academic-info', async (req, res) => {
   try {
     // Get all academic years from database (sorted ascending)
-    const academicYears = await AcademicYear.find().sort({ year: 1 });
+    const academicYears = await AcademicYear.find().sort({ year: 1 }).lean();
     const activeYear = academicYears.find(y => y.isActive);
 
     // If no academic years in database, return error
@@ -58,7 +58,7 @@ router.get('/dashboard', async (req, res) => {
     const dashboardData = {};
 
     for (const level of levels) {
-      const courses = await Course.find({ level, teacher: req.user._id });
+      const courses = await Course.find({ level, teacher: req.user._id }).lean();
       const totalStudents = await User.countDocuments({ 
         role: 'student', 
         level,
@@ -108,7 +108,7 @@ router.post('/courses', [
 
     // Auto-enroll all students of this level
     try {
-      const students = await User.find({ role: 'student', level });
+      const students = await User.find({ role: 'student', level }).lean();
       
       if (students.length > 0) {
         const studentIds = students.map(s => s._id);
@@ -141,7 +141,8 @@ router.get('/courses/:level', async (req, res) => {
     const { level } = req.params;
     const courses = await Course.find({ level, teacher: req.user._id })
       .populate('students', 'firstName lastName email')
-      .populate('assessments');
+      .populate('assessments')
+      .lean();
 
     res.json(courses);
   } catch (error) {
@@ -232,22 +233,23 @@ router.get('/courses/:courseId/students', async (req, res) => {
     const { courseId } = req.params;
 
     const course = await Course.findById(courseId)
-      .populate('students', 'firstName lastName email')
+      .populate('students', 'firstName lastName email _id')
       .populate({
         path: 'assessments',
         populate: {
           path: 'marks.student',
-          select: 'firstName lastName'
+          select: '_id'
         }
       });
-
-    if (!course) {
-      return res.status(404).json({ message: 'Course not found' });
-    }
-
+    
+    // Verify authorization
     if (course.teacher.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to view this course' });
     }
+    
+    // Ensure arrays exist
+    course.students = course.students || [];
+    course.assessments = course.assessments || [];
 
     // Calculate average marks for each student
     const studentsWithPerformance = course.students.map(student => {
@@ -256,9 +258,19 @@ router.get('/courses/:courseId/students', async (req, res) => {
       let totalAssessments = 0;
 
       course.assessments.forEach(assessment => {
-        const studentMark = assessment.marks.find(mark => 
-          mark.student._id.toString() === student._id.toString()
-        );
+        if (!assessment.marks || assessment.marks.length === 0) {
+          return;
+        }
+        
+        const studentMark = assessment.marks.find(mark => {
+          // mark.student could be an ObjectId or an object with _id field
+          const markStudentId = mark.student._id 
+            ? mark.student._id.toString() 
+            : mark.student.toString();
+          const currentStudentId = student._id.toString();
+          return markStudentId === currentStudentId;
+        });
+        
         if (studentMark) {
           totalObtainedMarks += studentMark.score;
           totalMaxMarks += assessment.maxMarks;
@@ -273,15 +285,16 @@ router.get('/courses/:courseId/students', async (req, res) => {
       if (average >= 70) color = 'green'; // 70% and above
       else if (average >= 60) color = 'yellow'; // 60-69.9%
 
+      const studentData = student.toObject ? student.toObject() : student;
       return {
-        ...student.toObject(),
+        ...studentData,
         average: Math.round(average * 100) / 100,
         color,
         totalAssessments
       };
-    });
+      });
 
-    res.json(studentsWithPerformance);
+      res.json(studentsWithPerformance);
   } catch (error) {
     console.error('Students fetch error:', error);
     res.status(500).json({ message: 'Error fetching students' });

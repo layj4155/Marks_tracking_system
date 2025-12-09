@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['teacher', 'student', 'admin'],
+    enum: ['teacher', 'student', 'admin', 'parent'],
     required: true
   },
   level: {
@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema({
       return this.role === 'student';
     }
   },
+  children: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   currentAcademicYear: {
     type: String,
     default: function() {
@@ -52,14 +56,48 @@ const userSchema = new mongoose.Schema({
   courses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course'
-  }]
+  }],
+  resetPasswordToken: {
+    type: String,
+    select: false
+  },
+  resetPasswordExpires: {
+    type: Date,
+    select: false
+  },
+  failedLoginAttempts: {
+    type: Number,
+    default: 0,
+    select: false
+  },
+  lockUntil: {
+    type: Date,
+    select: false
+  },
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailVerificationToken: {
+    type: String,
+    select: false
+  },
+  emailVerificationExpires: {
+    type: Date,
+    select: false
+  }
 }, {
   timestamps: true
 });
 
-// Hash password before saving
+// Hash password before saving (skip if already hashed)
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
+  
+  // Skip hashing if password is already a bcrypt hash
+  if (this.password.startsWith('$2a$') || this.password.startsWith('$2b$') || this.password.startsWith('$2y$')) {
+    return next();
+  }
   
   try {
     const salt = await bcrypt.genSalt(10);
@@ -74,5 +112,11 @@ userSchema.pre('save', async function(next) {
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
+
+// Indexes for common queries (email already has unique index)
+userSchema.index({ role: 1 });
+userSchema.index({ level: 1 });
+userSchema.index({ role: 1, level: 1 });
+userSchema.index({ courses: 1 });
 
 module.exports = mongoose.model('User', userSchema);

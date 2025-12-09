@@ -1,0 +1,606 @@
+/* Main Stylesheet - Simple and Effective */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1f2937;
+}
+
+/* CRITICAL: Display classes - MUST be first */
+.hidden,
+[class*="Modal"].hidden,
+[class*="modal"].hidden,
+#academicYearModal.hidden,
+#forgotPasswordModal.hidden,
+#addAcademicYearModal.hidden,
+#editUserModal.hidden,
+#courseModal.hidden,
+#assessmentModal.hidden,
+#addStudentModal.hidden,
+#assessmentManagementModal.hidden,
+#editAssessmentModal.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  z-index: -999 !important;
+}
+
+/* Show modals when hidden class is removed */
+#addStudentModal:not(.hidden) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 50 !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ensure dashboards are hidden by default */
+#teacherDashboard.hidden,
+#studentDashboard.hidden,
+#adminDashboard.hidden,
+#levelDetails.hidden {
+  display: none !important;
+}
+
+.block {
+  display: block !important;
+}
+
+.flex {
+  display: flex !important;
+}
+
+.grid {
+  display: grid !important;
+}
+
+.inline-flex {
+  display: inline-flex !important;
+}
+
+/* Basic Tailwind Classes */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.fixed {
+  position: fixed !important;
+}
+
+.inset-0 {
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+}
+
+.z-50 {
+  z-index: 50 !important;
+}
+
+/* Colors */
+.bg-white {
+  background-color: #ffffff;
+}
+
+.bg-gray-50 {
+  background-color: #f9fafb;
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6;
+}
+
+.bg-black {
+   background-color: #000000;
+}
+
+.bg-blue-500 {
+   background-color: #3b82f6;
+}
+
+.bg-blue-600 {
+   background-color: #2563eb;
+}
+
+.bg-green-500 {
+   background-color: #10b981;
+}
+
+.bg-green-600 {
+   background-color: #059669;
+}
+
+.bg-red-500 {
+   background-color: #ef4444;
+}
+
+.bg-red-600 {
+   background-color: #dc2626;
+}
+
+.bg-gradient-primary {
+   background: linear-gradient(135deg, #382B82 0%, #DF4AA9 100%);
+}
+
+.text-white {
+  color: white;
+}
+
+.text-gray-500 {
+   color: #6b7280;
+}
+
+.text-gray-600 {
+   color: #4b5563;
+}
+
+.text-gray-700 {
+   color: #374151;
+}
+
+.text-gray-800 {
+  color: #1f2937;
+}
+
+/* Spacing */
+.p-4 {
+  padding: 1rem;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.p-8 {
+  padding: 2rem;
+}
+
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.py-1 {
+   padding-top: 0.25rem;
+   padding-bottom: 0.25rem;
+}
+
+.py-2 {
+   padding-top: 0.5rem;
+   padding-bottom: 0.5rem;
+}
+
+.py-8 {
+   padding-top: 2rem;
+   padding-bottom: 2rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+/* Layout */
+.flex-1 {
+  flex: 1;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.max-w-md {
+  max-width: 28rem;
+}
+
+.max-w-7xl {
+  max-width: 80rem;
+}
+
+.h-16 {
+  height: 4rem;
+}
+
+.w-full {
+   width: 100%;
+}
+
+.w-6 {
+   width: 1.5rem;
+}
+
+.h-6 {
+   height: 1.5rem;
+}
+
+/* Border & Radius */
+.rounded {
+   border-radius: 0.25rem;
+}
+
+.rounded-lg {
+   border-radius: 0.5rem;
+}
+
+.rounded-xl {
+   border-radius: 0.75rem;
+}
+
+.rounded-2xl {
+  border-radius: 1rem;
+}
+
+.border {
+  border: 1px solid #d1d5db;
+}
+
+.border-b {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.border-white\/20 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Shadow */
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Typography */
+.text-center {
+  text-align: center;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #382B82 0%, #DF4AA9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Forms */
+input,
+select,
+textarea {
+  font-size: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  font-family: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #382B82;
+  box-shadow: 0 0 0 3px rgba(56, 43, 130, 0.1);
+}
+
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+/* Buttons - CRITICAL */
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  transition: opacity 0.2s;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  white-space: nowrap;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Specific button styling */
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+.from-red-500 {
+   --tw-gradient-stops: #ef4444;
+}
+
+.to-red-600 {
+   --tw-gradient-stops: #dc2626;
+}
+
+.to-pink-600 {
+   --tw-gradient-stops: #ec4899;
+}
+
+.hover\:opacity-90:hover {
+  opacity: 0.9;
+}
+
+/* Utilities */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Close buttons */
+.close-modal-btn,
+button[title="Close"],
+button[title="Close assessment management"] {
+  color: #ef4444;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.close-modal-btn:hover,
+button[title="Close"]:hover,
+button[title="Close assessment management"]:hover {
+  color: #dc2626;
+  background-color: #fee2e2;
+}
+
+.transition-opacity {
+  transition: opacity 0.2s;
+}
+
+.transition-all {
+  transition: all 0.2s;
+}
+
+.space-y-2 > * + * {
+   margin-top: 0.5rem;
+}
+
+.space-y-4 > * + * {
+   margin-top: 1rem;
+}
+
+.space-y-6 > * + * {
+   margin-top: 1.5rem;
+}
+
+.space-x-2 > * + * {
+   margin-left: 0.5rem;
+}
+
+.space-x-4 > * + * {
+   margin-left: 1rem;
+}
+
+/* Admin tabs styling */
+.flex.space-x-4.mb-6.border-b {
+   flex-wrap: wrap;
+   gap: 0.5rem;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.max-h-64 {
+  max-height: 16rem;
+}
+
+/* Backdrop */
+.bg-opacity-50 {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.backdrop-blur-sm {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.bg-white\/95 {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .sm\:px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .md\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:px-8 {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Grid cols */
+.grid-cols-1 {
+   grid-template-columns: 1fr;
+}
+
+.grid-cols-2 {
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Flex wrap */
+.flex-wrap {
+   flex-wrap: wrap;
+}
+
+/* Whitespace */
+.whitespace-nowrap {
+   white-space: nowrap;
+}
+
+/* Padding bottom */
+.pb-2 {
+   padding-bottom: 0.5rem;
+}
+
+/* Flex utilities */
+.flex-col {
+  flex-direction: column;
+}
+
+.gap-2 {
+   gap: 0.5rem;
+}
+
+.gap-4 {
+   gap: 1rem;
+}
+
+/* Hover & Active states */
+.hover\:shadow-2xl:hover {
+   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.hover\:scale-105:hover {
+   transform: scale(1.05);
+}
+
+.hover\:bg-blue-600:hover {
+   background-color: #2563eb;
+}
+
+.hover\:bg-green-600:hover {
+   background-color: #059669;
+}
+
+.hover\:bg-red-600:hover {
+   background-color: #dc2626;
+}
+
+.hover\:opacity-90:hover {
+   opacity: 0.9;
+}
+
+/* Scale */
+.scale-105 {
+  transform: scale(1.05);
+}
