@@ -43,7 +43,12 @@ app.use(cors(corsOptions));
 
 // Body parser with size limit
 app.use(express.json({ limit: '10kb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1d',
+  etag: false
+}));
 
 // Rate limiting for auth endpoints
 const authLimiter = rateLimit({
@@ -90,9 +95,18 @@ app.use('/api/invitations', require('./routes/invitations'));
 app.use('/api/attendance', require('./routes/attendance'));
 app.use('/api/backup', require('./routes/backup'));
 
-// Serve static files
+// Serve index.html for root and non-API routes (SPA fallback)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('*', (req, res) => {
+  // Don't serve index.html for API routes
+  if (req.path.startsWith('/api/')) {
+    res.status(404).json({ message: 'API route not found' });
+  } else {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
 });
 
 // Error handling middleware

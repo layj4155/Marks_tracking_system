@@ -13,7 +13,7 @@ module.exports = {
   port: process.env.PORT || 3000,
   mongoUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/marks_tracking_system',
   jwtSecret: process.env.JWT_SECRET,
-  corsOrigins: (process.env.CORS_ORIGINS || 'https://eduanalyze.vercel.app,https://marks-tracking-system-ni8i.onrender.com,http://localhost:3000').split(',').map(s => s.trim()),
+  corsOrigins: (process.env.CORS_ORIGINS || 'https://eduanalyze.vercel.app,http://localhost:3000').split(',').map(s => s.trim()),
   teacherRegCode: process.env.TEACHER_REG_CODE,
   adminRegCode: process.env.ADMIN_REG_CODE,
   nodeEnv: process.env.NODE_ENV || 'development',
