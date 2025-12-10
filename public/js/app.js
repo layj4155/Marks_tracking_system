@@ -1,3 +1,5 @@
+const API_BASE_URL = 'https://marks-tracking-system-ni8i.onrender.com';
+
 class PerformanceTracker {
     constructor() {
         this.currentUser = null;
@@ -187,7 +189,7 @@ class PerformanceTracker {
         const password = document.getElementById('loginPassword').value;
 
         try {
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -227,7 +229,7 @@ class PerformanceTracker {
         }
 
         try {
-            const response = await fetch('/api/auth/register', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -255,7 +257,7 @@ class PerformanceTracker {
         if (!token) return;
 
         try {
-            const response = await fetch('/api/auth/me', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -287,7 +289,7 @@ class PerformanceTracker {
 
     async loadTeacherDashboard() {
         try {
-            const response = await fetch(`/api/teachers/dashboard?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
+            const response = await fetch(`${API_BASE_URL}/api/teachers/dashboard?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -316,7 +318,7 @@ class PerformanceTracker {
         document.getElementById('levelDetails').classList.remove('hidden');
 
         try {
-            const response = await fetch(`/api/teachers/courses/${level}`, {
+            const response = await fetch(`${API_BASE_URL}/api/teachers/courses/${level}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -398,7 +400,7 @@ class PerformanceTracker {
         const courseName = document.getElementById('courseName').value;
 
         try {
-            const response = await fetch('/api/teachers/courses', {
+            const response = await fetch(`${API_BASE_URL}/api/teachers/courses`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -458,7 +460,7 @@ class PerformanceTracker {
         };
 
         try {
-            const response = await fetch('/api/assessments', {
+            const response = await fetch(`${API_BASE_URL}/api/assessments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -484,7 +486,7 @@ class PerformanceTracker {
         const emptyMsg = document.getElementById('assessmentNoStudents');
         container.innerHTML = '';
         try {
-            const res = await fetch(`/api/teachers/courses/${this.currentCourse}/students`, {
+            const res = await fetch(`${API_BASE_URL}/api/teachers/courses/${this.currentCourse}/students`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
             if (!res.ok) return;
@@ -517,14 +519,14 @@ class PerformanceTracker {
         
         try {
             // Get all students
-            const allStudentsRes = await fetch('/api/courses/students', { 
+            const allStudentsRes = await fetch(`${API_BASE_URL}/api/courses/students`, { 
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } 
             });
             if (!allStudentsRes.ok) return;
             const allStudents = await allStudentsRes.json();
             
             // Get course students
-            const courseStudentsRes = await fetch(`/api/teachers/courses/${courseId}/students`, { 
+            const courseStudentsRes = await fetch(`${API_BASE_URL}/api/teachers/courses/${courseId}/students`, { 
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } 
             });
             if (!courseStudentsRes.ok) return;
@@ -552,7 +554,7 @@ class PerformanceTracker {
         const studentId = document.getElementById('studentSelect').value;
         if (!studentId) return;
         try {
-            const res = await fetch(`/api/teachers/courses/${this.currentCourse}/students`, {
+            const res = await fetch(`${API_BASE_URL}/api/teachers/courses/${this.currentCourse}/students`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -592,7 +594,7 @@ class PerformanceTracker {
 
     async loadAssessments() {
         try {
-            const res = await fetch(`/api/assessments/course/${this.currentCourse}`, {
+            const res = await fetch(`${API_BASE_URL}/api/assessments/course/${this.currentCourse}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
             if (!res.ok) return;
@@ -643,7 +645,7 @@ class PerformanceTracker {
 
     async editAssessment(assessmentId) {
         try {
-            const res = await fetch(`/api/assessments/${assessmentId}/marks`, {
+            const res = await fetch(`${API_BASE_URL}/api/assessments/${assessmentId}/marks`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
             if (!res.ok) return;
@@ -695,7 +697,7 @@ class PerformanceTracker {
         }));
         
         try {
-            const res = await fetch(`/api/assessments/${this.currentEditingAssessment}/marks`, {
+            const res = await fetch(`${API_BASE_URL}/api/assessments/${this.currentEditingAssessment}/marks`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -713,7 +715,7 @@ class PerformanceTracker {
     async deleteAssessment(assessmentId) {
         if (!confirm('Are you sure you want to delete this assessment?')) return;
         try {
-            const res = await fetch(`/api/assessments/${assessmentId}`, {
+            const res = await fetch(`${API_BASE_URL}/api/assessments/${assessmentId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -727,7 +729,7 @@ class PerformanceTracker {
     async deleteCourse(courseId) {
         if (!confirm('Are you sure you want to delete this course? This will remove all assessments and student assignments.')) return;
         try {
-            const res = await fetch(`/api/courses/${courseId}`, {
+            const res = await fetch(`${API_BASE_URL}/api/courses/${courseId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -740,7 +742,7 @@ class PerformanceTracker {
 
     async showCourseStudents(courseId, courseName) {
         try {
-            const response = await fetch(`/api/teachers/courses/${courseId}/students`, {
+            const response = await fetch(`${API_BASE_URL}/api/teachers/courses/${courseId}/students`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -858,7 +860,7 @@ class PerformanceTracker {
 
     async viewStudentMarks(courseId, studentId, studentName) {
         try {
-            const response = await fetch(`/api/teachers/courses/${courseId}/students`, {
+            const response = await fetch(`${API_BASE_URL}/api/teachers/courses/${courseId}/students`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -870,7 +872,7 @@ class PerformanceTracker {
             if (!student) return;
 
             // Fetch all assessments for this course
-            const assessmentsResponse = await fetch(`/api/assessments/course/${courseId}`, {
+            const assessmentsResponse = await fetch(`${API_BASE_URL}/api/assessments/course/${courseId}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -959,7 +961,7 @@ class PerformanceTracker {
 
     async loadStudentDashboard() {
         try {
-            const response = await fetch(`/api/students/dashboard?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
+            const response = await fetch(`${API_BASE_URL}/api/students/dashboard?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -1125,7 +1127,7 @@ class PerformanceTracker {
         const messageDiv = document.getElementById('forgotPasswordMessage');
 
         try {
-            const response = await fetch('/api/auth/forgot-password', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
@@ -1148,7 +1150,7 @@ class PerformanceTracker {
 
     async loadAdminDashboard() {
         try {
-            const response = await fetch('/api/admin/dashboard/stats', {
+            const response = await fetch(`${API_BASE_URL}/api/admin/dashboard/stats`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -1170,7 +1172,7 @@ class PerformanceTracker {
 
     async loadAllUsers() {
         try {
-            const response = await fetch('/api/admin/users', {
+            const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -1264,7 +1266,7 @@ class PerformanceTracker {
 
     async editUser(userId) {
         try {
-            const response = await fetch(`/api/admin/users/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -1310,7 +1312,7 @@ class PerformanceTracker {
         }
 
         try {
-            const response = await fetch(`/api/admin/users/${this.currentEditingUser}`, {
+            const response = await fetch(`${API_BASE_URL}/api/admin/users/${this.currentEditingUser}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1377,7 +1379,7 @@ class PerformanceTracker {
         }
 
         try {
-            const response = await fetch(`/api/admin/users/${userId}/reset-password`, {
+            const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/reset-password`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -1401,7 +1403,7 @@ class PerformanceTracker {
 
     async loadAcademicYears() {
         try {
-            const response = await fetch('/api/admin/academic-years', {
+            const response = await fetch(`${API_BASE_URL}/api/admin/academic-years`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -1472,7 +1474,7 @@ class PerformanceTracker {
         const year = document.getElementById('newAcademicYear').value;
 
         try {
-            const response = await fetch('/api/admin/academic-years', {
+            const response = await fetch(`${API_BASE_URL}/api/admin/academic-years`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1499,7 +1501,7 @@ class PerformanceTracker {
         if (!term) return;
 
         try {
-            const response = await fetch(`/api/admin/academic-years/${yearId}/activate`, {
+            const response = await fetch(`${API_BASE_URL}/api/admin/academic-years/${yearId}/activate`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1523,7 +1525,7 @@ class PerformanceTracker {
 
     async changeActiveTerm(yearId, term) {
         try {
-            const response = await fetch(`/api/admin/academic-years/${yearId}/activate`, {
+            const response = await fetch(`${API_BASE_URL}/api/admin/academic-years/${yearId}/activate`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1551,7 +1553,7 @@ class PerformanceTracker {
         }
 
         try {
-            const response = await fetch(`/api/admin/academic-years/${yearId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/admin/academic-years/${yearId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -1642,7 +1644,7 @@ class PerformanceTracker {
         const role = document.getElementById('inviteRole').value;
 
         try {
-            const response = await fetch('/api/invitations', {
+            const response = await fetch(`${API_BASE_URL}/api/invitations`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1668,7 +1670,7 @@ class PerformanceTracker {
 
     async loadInvitations() {
         try {
-            const response = await fetch('/api/invitations', {
+            const response = await fetch(`${API_BASE_URL}/api/invitations`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -1763,7 +1765,7 @@ class PerformanceTracker {
         const recipients = document.getElementById('announcementRecipients').value;
 
         try {
-            const response = await fetch('/api/admin/announcements', {
+            const response = await fetch(`${API_BASE_URL}/api/admin/announcements`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1791,7 +1793,7 @@ class PerformanceTracker {
         if (!yearSelect) return;
         
         // Load from existing academic years
-        fetch('/api/admin/academic-years', {
+        fetch(`${API_BASE_URL}/api/admin/academic-years`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         })
         .then(r => r.json())
@@ -1894,7 +1896,7 @@ class PerformanceTracker {
 
     async loadAuditLogs() {
          try {
-             const response = await fetch('/api/backup/audit-logs', {
+             const response = await fetch(`${API_BASE_URL}/api/backup/audit-logs`, {
                  headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
              });
 
@@ -1955,7 +1957,7 @@ class PerformanceTracker {
 
     async loadTeacherReports() {
         try {
-            const response = await fetch(`/api/reports/teacher?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
+            const response = await fetch(`${API_BASE_URL}/api/reports/teacher?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -2002,7 +2004,7 @@ class PerformanceTracker {
                 ...(course && { courseId: course })
             });
 
-            const response = await fetch(`/api/reports/generate?${params}`, {
+            const response = await fetch(`${API_BASE_URL}/api/reports/generate?${params}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -2069,7 +2071,7 @@ class PerformanceTracker {
                 ...(level && { level })
             });
 
-            const response = await fetch(`/api/analytics/class?${params}`, {
+            const response = await fetch(`${API_BASE_URL}/api/analytics/class?${params}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -2122,7 +2124,7 @@ class PerformanceTracker {
         }
 
         try {
-            const response = await fetch(`/api/attendance/students?level=${level}&date=${date || new Date().toISOString().split('T')[0]}`, {
+            const response = await fetch(`${API_BASE_URL}/api/attendance/students?level=${level}&date=${date || new Date().toISOString().split('T')[0]}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -2165,7 +2167,7 @@ class PerformanceTracker {
         }
 
         try {
-            const response = await fetch('/api/attendance', {
+            const response = await fetch(`${API_BASE_URL}/api/attendance`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -2224,7 +2226,7 @@ class PerformanceTracker {
 
     async loadStudentGrades() {
         try {
-            const response = await fetch(`/api/students/grades?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
+            const response = await fetch(`${API_BASE_URL}/api/students/grades?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -2241,7 +2243,7 @@ class PerformanceTracker {
 
     async loadStudentNotifications() {
         try {
-            const response = await fetch('/api/students/notifications', {
+            const response = await fetch(`${API_BASE_URL}/api/students/notifications`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -2273,7 +2275,7 @@ class PerformanceTracker {
 
     async downloadGradeReport() {
         try {
-            const response = await fetch(`/api/reports/download/grades?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
+            const response = await fetch(`${API_BASE_URL}/api/reports/download/grades?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -2296,7 +2298,7 @@ class PerformanceTracker {
 
     async downloadPerformanceReport() {
         try {
-            const response = await fetch(`/api/reports/download/performance?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
+            const response = await fetch(`${API_BASE_URL}/api/reports/download/performance?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
