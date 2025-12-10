@@ -558,21 +558,42 @@ button[title="Close assessment management"]:hover {
   background-color: rgba(255, 255, 255, 0.95);
 }
 
+/* Mobile First - Default for small screens */
+.grid-cols-2,
+.grid-cols-3,
+.grid-cols-4,
+.md\:grid-cols-3,
+.md\:grid-cols-4 {
+  grid-template-columns: 1fr !important;
+}
+
 /* Responsive */
 @media (min-width: 640px) {
   .sm\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
+  
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }
 
 @media (min-width: 768px) {
   .md\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 
   .md\:grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+  
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  
+  .grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   }
 }
 
@@ -588,17 +609,7 @@ button[title="Close assessment management"]:hover {
    grid-template-columns: 1fr;
 }
 
-.grid-cols-2 {
-   grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.grid-cols-3 {
-   grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.grid-cols-4 {
-   grid-template-columns: repeat(4, minmax(0, 1fr));
-}
+/* Override: Mobile first - these will be overridden by @media queries above */
 
 /* Flex wrap */
 .flex-wrap {
@@ -656,4 +667,74 @@ button[title="Close assessment management"]:hover {
 /* Scale */
 .scale-105 {
   transform: scale(1.05);
+}
+
+/* Mobile Responsive Improvements */
+@media (max-width: 640px) {
+  /* Make buttons full width on mobile */
+  button, .btn {
+    min-height: 2.5rem;
+    font-size: 1rem;
+  }
+  
+  /* Reduce padding on mobile */
+  .p-4 { padding: 0.75rem !important; }
+  .p-6 { padding: 1rem !important; }
+  .p-8 { padding: 1.5rem !important; }
+  
+  /* Stack flex items vertically */
+  .flex {
+    flex-direction: column;
+  }
+  
+  .flex-row {
+    flex-direction: row;
+  }
+  
+  /* Reduce gaps */
+  .gap-4 { gap: 0.5rem !important; }
+  .gap-6 { gap: 0.75rem !important; }
+  
+  /* Make modals full width */
+  .modal, [class*="Modal"] {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    border-radius: 0.5rem;
+  }
+  
+  /* Responsive font sizes */
+  .text-3xl { font-size: 1.5rem; }
+  .text-2xl { font-size: 1.25rem; }
+  .text-xl { font-size: 1.1rem; }
+  
+  /* Make tables scrollable on mobile */
+  .overflow-auto {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  
+  /* Reduce button spacing */
+  button + button {
+    margin-left: 0.25rem;
+  }
+  
+  /* Make course cards stack */
+  .rounded-lg {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small devices */
+  .p-4 { padding: 0.5rem !important; }
+  .p-8 { padding: 1rem !important; }
+  .text-lg { font-size: 1rem; }
+  .text-xl { font-size: 1rem; }
+  
+  /* Stack buttons */
+  button {
+    display: block;
+    width: 100% !important;
+    margin-bottom: 0.5rem;
+  }
 }
