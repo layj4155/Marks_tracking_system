@@ -21,7 +21,10 @@ const attendanceSchema = new mongoose.Schema({
   course: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course',
-    required: true
+    required: false
+  },
+  levelAttendance: {
+    type: String
   },
   date: {
     type: Date,
@@ -47,7 +50,7 @@ const attendanceSchema = new mongoose.Schema({
 });
 
 // Indexes
-attendanceSchema.index({ course: 1, date: 1 }, { unique: true });
+attendanceSchema.index({ course: 1, date: 1 }, { unique: true, sparse: true });
 attendanceSchema.index({ course: 1, academicYear: 1, term: 1 });
 attendanceSchema.index({ 'records.student': 1 });
 attendanceSchema.index({ date: -1 });

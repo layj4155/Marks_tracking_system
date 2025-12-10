@@ -172,51 +172,151 @@
             </nav>
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div id="level3Card" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 cursor-pointer hover:shadow-2xl hover:scale-105 transition-all border border-white/50">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800">Level 3</h3>
-                            <div class="w-3 h-3 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full shadow-lg"></div>
-                        </div>
-                        <div class="text-3xl font-bold gradient-text mb-2" id="level3Students">0</div>
-                        <p class="text-gray-600 text-sm">Students enrolled</p>
-                        <p class="text-gray-600 text-sm" id="level3Courses">0 courses</p>
-                    </div>
-
-                    <div id="level4Card" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 cursor-pointer hover:shadow-2xl hover:scale-105 transition-all border border-white/50">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800">Level 4</h3>
-                            <div class="w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full shadow-lg"></div>
-                        </div>
-                        <div class="text-3xl font-bold gradient-text mb-2" id="level4Students">0</div>
-                        <p class="text-gray-600 text-sm">Students enrolled</p>
-                        <p class="text-gray-600 text-sm" id="level4Courses">0 courses</p>
-                    </div>
-
-                    <div id="level5Card" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 cursor-pointer hover:shadow-2xl hover:scale-105 transition-all border border-white/50">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800">Level 5</h3>
-                            <div class="w-3 h-3 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full shadow-lg"></div>
-                        </div>
-                        <div class="text-3xl font-bold gradient-text mb-2" id="level5Students">0</div>
-                        <p class="text-gray-600 text-sm">Students enrolled</p>
-                        <p class="text-gray-600 text-sm" id="level5Courses">0 courses</p>
+                <!-- Teacher Navigation Tabs -->
+                <div class="mb-8">
+                    <div class="flex flex-wrap gap-2 border-b pb-2">
+                        <button id="dashboardTab" class="px-3 py-2 text-sm font-medium border-b-2 border-primary transition whitespace-nowrap">Dashboard</button>
+                        <button id="reportsTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Reports</button>
+                        <button id="teacherAnalyticsTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Analytics</button>
+                        <button id="attendanceTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Attendance</button>
                     </div>
                 </div>
 
-                <!-- Level Details -->
-                <div id="levelDetails" class="hidden">
-                    <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 id="levelTitle" class="text-2xl font-bold gradient-text"></h2>
-                            <button id="addCourseBtn" class="bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
-                                Add Course
+                <!-- Dashboard Section -->
+                <div id="dashboardSection" class="space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div id="level3Card" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 cursor-pointer hover:shadow-2xl hover:scale-105 transition-all border border-white/50">
+                             <div class="flex items-center justify-between mb-4">
+                                 <h3 class="text-lg font-semibold text-gray-800">Level 3</h3>
+                                 <div class="w-3 h-3 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full shadow-lg"></div>
+                             </div>
+                             <div class="text-3xl font-bold gradient-text mb-2" id="level3Students">0</div>
+                             <p class="text-gray-600 text-sm">Students enrolled</p>
+                             <p class="text-gray-600 text-sm" id="level3Courses">0 courses</p>
+                         </div>
+
+                         <div id="level4Card" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 cursor-pointer hover:shadow-2xl hover:scale-105 transition-all border border-white/50">
+                             <div class="flex items-center justify-between mb-4">
+                                 <h3 class="text-lg font-semibold text-gray-800">Level 4</h3>
+                                 <div class="w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full shadow-lg"></div>
+                             </div>
+                             <div class="text-3xl font-bold gradient-text mb-2" id="level4Students">0</div>
+                             <p class="text-gray-600 text-sm">Students enrolled</p>
+                             <p class="text-gray-600 text-sm" id="level4Courses">0 courses</p>
+                         </div>
+
+                         <div id="level5Card" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 cursor-pointer hover:shadow-2xl hover:scale-105 transition-all border border-white/50">
+                             <div class="flex items-center justify-between mb-4">
+                                 <h3 class="text-lg font-semibold text-gray-800">Level 5</h3>
+                                 <div class="w-3 h-3 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full shadow-lg"></div>
+                             </div>
+                             <div class="text-3xl font-bold gradient-text mb-2" id="level5Students">0</div>
+                             <p class="text-gray-600 text-sm">Students enrolled</p>
+                             <p class="text-gray-600 text-sm" id="level5Courses">0 courses</p>
+                         </div>
+                     </div>
+
+                     <!-- Level Details -->
+                     <div id="levelDetails" class="hidden">
+                         <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
+                             <div class="flex items-center justify-between mb-6">
+                                 <h2 id="levelTitle" class="text-2xl font-bold gradient-text"></h2>
+                                 <button id="addCourseBtn" class="bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                                     Add Course
+                                 </button>
+                             </div>
+                             <div id="coursesList" class="space-y-4"></div>
+                         </div>
+                     </div>
+                </div>
+
+                <!-- Reports Section -->
+                <div id="reportsSection" class="hidden bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
+                    <h2 class="text-2xl font-bold gradient-text mb-6">Student Performance Reports</h2>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div>
+                                <label for="reportLevel" class="block text-sm font-medium text-gray-700 mb-1">Level</label>
+                                <select id="reportLevel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="">All Levels</option>
+                                    <option value="Level 3">Level 3</option>
+                                    <option value="Level 4">Level 4</option>
+                                    <option value="Level 5">Level 5</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="reportCourse" class="block text-sm font-medium text-gray-700 mb-1">Course</label>
+                                <select id="reportCourse" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="">All Courses</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end gap-2">
+                                <button id="generateReportBtn" class="bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg w-full">
+                                    Generate Report
+                                </button>
+                            </div>
+                        </div>
+                        <div id="reportContainer" class="space-y-4"></div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="analyticsSection" class="hidden bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
+                    <h2 class="text-2xl font-bold gradient-text mb-6">Class Analytics</h2>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label for="analyticsLevel" class="block text-sm font-medium text-gray-700 mb-1">Select Level</label>
+                                <select id="analyticsLevel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="">All Levels</option>
+                                    <option value="Level 3">Level 3</option>
+                                    <option value="Level 4">Level 4</option>
+                                    <option value="Level 5">Level 5</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button id="loadAnalyticsBtn" class="bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg w-full">
+                                    Load Analytics
+                                </button>
+                            </div>
+                        </div>
+                        <div id="analyticsContainer" class="space-y-6"></div>
+                    </div>
+                </div>
+
+                <!-- Attendance Section -->
+                <div id="attendanceSection" class="hidden bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
+                    <h2 class="text-2xl font-bold gradient-text mb-6">Daily Attendance</h2>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div>
+                                <label for="attendanceLevel" class="block text-sm font-medium text-gray-700 mb-1">Level</label>
+                                <select id="attendanceLevel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="">Select Level</option>
+                                    <option value="Level 3">Level 3</option>
+                                    <option value="Level 4">Level 4</option>
+                                    <option value="Level 5">Level 5</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="attendanceDate" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                <input type="date" id="attendanceDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                            <div class="flex items-end">
+                                <button id="loadAttendanceBtn" class="bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg w-full">
+                                    Load Students
+                                </button>
+                            </div>
+                        </div>
+                        <form id="attendanceForm" class="space-y-4">
+                            <div id="attendanceStudentsContainer" class="space-y-2 border rounded-lg p-4 bg-gray-50 max-h-96 overflow-auto"></div>
+                            <button type="submit" class="bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                                Submit Attendance
                             </button>
-                        </div>
-                        <div id="coursesList" class="space-y-4"></div>
+                        </form>
                     </div>
                 </div>
-            </div>
+             </div>
         </div>
 
         <!-- Student Dashboard -->
@@ -238,7 +338,71 @@
             </nav>
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div id="studentCourses" class="space-y-6"></div>
+                <!-- Student Navigation Tabs -->
+                <div class="mb-8">
+                    <div class="flex flex-wrap gap-2 border-b pb-2">
+                        <button id="studentGradesTab" class="px-3 py-2 text-sm font-medium border-b-2 border-primary transition whitespace-nowrap">My Grades</button>
+                        <button id="studentNotificationsTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Notifications</button>
+                        <button id="studentReportsTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">My Reports</button>
+                    </div>
+                </div>
+
+                <!-- Grades Section -->
+                <div id="studentGradesSection" class="space-y-6">
+                    <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
+                        <h2 class="text-2xl font-bold gradient-text mb-6">My Grades & Performance</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                                <p class="text-sm text-gray-600">Overall Average</p>
+                                <p class="text-3xl font-bold text-blue-600" id="studentOverallAverage">--</p>
+                                <p class="text-xs text-gray-500 mt-2">Based on all assessments</p>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                                <p class="text-sm text-gray-600">Courses Enrolled</p>
+                                <p class="text-3xl font-bold text-green-600" id="studentCourseCount">0</p>
+                            </div>
+                            <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                                <p class="text-sm text-gray-600">Assessments Completed</p>
+                                <p class="text-3xl font-bold text-purple-600" id="studentAssessmentCount">0</p>
+                            </div>
+                        </div>
+                        <div id="studentCourses" class="space-y-6"></div>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div id="studentNotificationsSection" class="hidden">
+                    <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
+                        <h2 class="text-2xl font-bold gradient-text mb-6">Notifications</h2>
+                        <div id="notificationsContainer" class="space-y-4">
+                            <p class="text-gray-500 text-center py-8">No notifications yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student Reports Section -->
+                <div id="studentReportsSection" class="hidden">
+                    <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
+                        <h2 class="text-2xl font-bold gradient-text mb-6">Download My Reports</h2>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <button id="downloadGradeReportBtn" class="bg-gradient-primary text-white px-4 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8m0 8l-9-2m9 2l9-2m-9-8l9 2m-9-2l-9 2m9-2v8m0 0l9-2m-9 2l-9-2"></path>
+                                    </svg>
+                                    Download Grade Report (PDF)
+                                </button>
+                                <button id="downloadPerformanceReportBtn" class="bg-gradient-primary text-white px-4 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    Download Performance Report (PDF)
+                                </button>
+                            </div>
+                            <div id="downloadReportMessage" class="text-center text-sm text-gray-600"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -262,22 +426,22 @@
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <!-- Statistics Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
-                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Admins</h3>
-                        <div class="text-3xl font-bold gradient-text" id="totalAdmins">0</div>
+                <div class="grid grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-700 mb-3">Total Admins</h3>
+                        <div class="text-5xl font-bold gradient-text" id="totalAdmins">0</div>
                     </div>
-                    <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
-                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Teachers</h3>
-                        <div class="text-3xl font-bold gradient-text" id="totalTeachers">0</div>
+                    <div class="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-700 mb-3">Total Teachers</h3>
+                        <div class="text-5xl font-bold gradient-text" id="totalTeachers">0</div>
                     </div>
-                    <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
-                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Students</h3>
-                        <div class="text-3xl font-bold gradient-text" id="totalStudents">0</div>
+                    <div class="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-700 mb-3">Total Students</h3>
+                        <div class="text-5xl font-bold gradient-text" id="totalStudents">0</div>
                     </div>
-                    <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
-                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Courses</h3>
-                        <div class="text-3xl font-bold gradient-text" id="totalCourses">0</div>
+                    <div class="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-700 mb-3">Total Courses</h3>
+                        <div class="text-5xl font-bold gradient-text" id="totalCourses">0</div>
                     </div>
                 </div>
 
@@ -292,17 +456,118 @@
                     <div id="academicYearsContainer" class="space-y-3"></div>
                 </div>
 
-                <!-- User Management Tabs -->
-                <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
-                    <div class="flex flex-wrap gap-2 mb-6 border-b pb-2">
-                         <button id="adminsTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Admins</button>
-                         <button id="teachersTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Teachers</button>
-                         <button id="level3Tab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Level 3 Students</button>
-                         <button id="level4Tab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Level 4 Students</button>
-                         <button id="level5Tab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Level 5 Students</button>
-                     </div>
+                <!-- Admin Feature Tabs -->
+                <div class="mb-8">
+                    <div class="flex flex-wrap gap-2 border-b pb-2">
+                        <button id="usersManagementTab" class="px-3 py-2 text-sm font-medium border-b-2 border-primary transition whitespace-nowrap">Users</button>
+                        <button id="invitationsTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Invitations</button>
+                        <button id="bulkImportTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Bulk Import</button>
+                        <button id="announcementsTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Announcements</button>
+                        <button id="analyticsTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Analytics</button>
+                        <button id="auditLogsTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Audit Logs</button>
+                    </div>
+                </div>
 
-                    <div id="usersContainer" class="space-y-4"></div>
+                <!-- User Management Section -->
+                <div id="usersManagementSection" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50">
+                     <div class="flex flex-wrap gap-2 mb-6 border-b pb-2">
+                          <button id="adminsTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Admins</button>
+                          <button id="teachersTab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Teachers</button>
+                          <button id="level3Tab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Level 3 Students</button>
+                          <button id="level4Tab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Level 4 Students</button>
+                          <button id="level5Tab" class="px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-primary transition whitespace-nowrap">Level 5 Students</button>
+                      </div>
+
+                     <div id="usersContainer" class="space-y-4"></div>
+                </div>
+
+                <!-- Invitations Section -->
+                <div id="invitationsSection" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50" style="display: none;">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold gradient-text">Manage Invitations</h2>
+                        <button id="sendInvitationBtn" class="bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                            Send Invitation
+                        </button>
+                    </div>
+                    <div id="invitationsContainer" class="space-y-4"></div>
+                </div>
+
+                <!-- Bulk Import Section -->
+                <div id="bulkImportSection" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50" style="display: none;">
+                    <h2 class="text-xl font-bold gradient-text mb-6">Bulk Import Users</h2>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button id="importStudentsBtn" class="bg-blue-500 text-white px-4 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                                Import Students (CSV)
+                            </button>
+                            <button id="importTeachersBtn" class="bg-green-500 text-white px-4 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                                Import Teachers (CSV)
+                            </button>
+                        </div>
+                        <div id="importResultsContainer" class="mt-6"></div>
+                    </div>
+                </div>
+
+                <!-- Announcements Section -->
+                <div id="announcementsSection" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50" style="display: none;">
+                    <h2 class="text-xl font-bold gradient-text mb-6">Send Announcements</h2>
+                    <form id="announcementForm" class="space-y-4">
+                        <div>
+                            <label for="announcementTitle" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                            <input type="text" id="announcementTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="announcementMessage" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                            <textarea id="announcementMessage" required rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                        </div>
+                        <div>
+                            <label for="announcementRecipients" class="block text-sm font-medium text-gray-700 mb-1">Send to</label>
+                            <select id="announcementRecipients" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Select recipients</option>
+                                <option value="all">All Users</option>
+                                <option value="students">All Students</option>
+                                <option value="teachers">All Teachers</option>
+                                <option value="level3">Level 3 Students</option>
+                                <option value="level4">Level 4 Students</option>
+                                <option value="level5">Level 5 Students</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                            Send Announcement
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="adminAnalyticsSection" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50" style="display: none;">
+                    <h2 class="text-xl font-bold gradient-text mb-6">System Analytics</h2>
+                    <form id="analyticsFilterForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label for="analyticsYear" class="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
+                            <select id="analyticsYear" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Select Year</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="analyticsTerm" class="block text-sm font-medium text-gray-700 mb-1">Term</label>
+                            <select id="analyticsTerm" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Select Term</option>
+                                <option value="1st Term">1st Term</option>
+                                <option value="2nd Term">2nd Term</option>
+                                <option value="3rd Term">3rd Term</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="self-end bg-gradient-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                            Load Analytics
+                        </button>
+                    </form>
+                    <div id="analyticsContainer" class="space-y-6"></div>
+                </div>
+
+                <!-- Audit Logs Section -->
+                <div id="auditLogsSection" class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-white/50" style="display: none;">
+                    <h2 class="text-xl font-bold gradient-text mb-6">Audit Logs</h2>
+                    <div id="auditLogsContainer" class="space-y-4"></div>
                 </div>
             </div>
         </div>
@@ -321,6 +586,58 @@
                             Add Year
                         </button>
                         <button type="button" id="cancelAddAcademicYearBtn" class="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white py-2 px-4 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Send Invitation Modal -->
+        <div id="sendInvitationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+                <h3 class="text-xl font-bold gradient-text mb-4">Send Invitation</h3>
+                <form id="sendInvitationForm" class="space-y-4">
+                    <div>
+                        <label for="inviteEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="inviteEmail" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="inviteRole" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                        <select id="inviteRole" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">Select Role</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="admin">Admin</option>
+                            <option value="parent">Parent</option>
+                        </select>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button type="submit" class="flex-1 bg-gradient-primary text-white py-2 px-4 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                            Send
+                        </button>
+                        <button type="button" id="cancelSendInvitationBtn" class="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white py-2 px-4 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bulk Import Modal -->
+        <div id="bulkImportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
+                <h3 class="text-xl font-bold gradient-text mb-4">Bulk Import</h3>
+                <form id="bulkImportForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">CSV Data</label>
+                        <textarea id="csvData" required rows="6" placeholder="Paste CSV content here..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-mono text-sm"></textarea>
+                        <p class="text-xs text-gray-500 mt-2">Format: firstName,lastName,email[,level]</p>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button type="submit" class="flex-1 bg-gradient-primary text-white py-2 px-4 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                            Import
+                        </button>
+                        <button type="button" id="cancelBulkImportBtn" class="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white py-2 px-4 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
                             Cancel
                         </button>
                     </div>

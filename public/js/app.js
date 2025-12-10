@@ -106,6 +106,56 @@ class PerformanceTracker {
         document.getElementById('addAcademicYearBtn').addEventListener('click', () => this.showAddAcademicYearModal());
         document.getElementById('addAcademicYearForm').addEventListener('submit', (e) => this.handleAddAcademicYear(e));
         document.getElementById('cancelAddAcademicYearBtn').addEventListener('click', () => this.hideAddAcademicYearModal());
+
+        // New feature tabs
+        document.getElementById('usersManagementTab').addEventListener('click', () => this.showAdminSection('users'));
+        document.getElementById('invitationsTab').addEventListener('click', () => this.showAdminSection('invitations'));
+        document.getElementById('bulkImportTab').addEventListener('click', () => this.showAdminSection('bulkImport'));
+        document.getElementById('announcementsTab').addEventListener('click', () => this.showAdminSection('announcements'));
+        document.getElementById('analyticsTab').addEventListener('click', () => this.showAdminSection('analytics'));
+        document.getElementById('auditLogsTab').addEventListener('click', () => this.showAdminSection('auditLogs'));
+        document.getElementById('analyticsFilterForm').addEventListener('submit', (e) => this.handleLoadAnalytics(e));
+
+        // Invitations
+        document.getElementById('sendInvitationBtn').addEventListener('click', () => this.showSendInvitationModal());
+        document.getElementById('sendInvitationForm').addEventListener('submit', (e) => this.handleSendInvitation(e));
+        document.getElementById('cancelSendInvitationBtn').addEventListener('click', () => this.hideSendInvitationModal());
+
+        // Bulk Import
+        document.getElementById('importStudentsBtn').addEventListener('click', () => this.showBulkImportModal('students'));
+        document.getElementById('importTeachersBtn').addEventListener('click', () => this.showBulkImportModal('teachers'));
+        document.getElementById('bulkImportForm').addEventListener('submit', (e) => this.handleBulkImport(e));
+        document.getElementById('cancelBulkImportBtn').addEventListener('click', () => this.hideBulkImportModal());
+
+        // Announcements
+        document.getElementById('announcementForm').addEventListener('submit', (e) => this.handleSendAnnouncement(e));
+
+        // Teacher tabs
+        document.getElementById('dashboardTab').addEventListener('click', () => this.showTeacherSection('dashboard'));
+        document.getElementById('reportsTab').addEventListener('click', () => this.showTeacherSection('reports'));
+        document.getElementById('teacherAnalyticsTab').addEventListener('click', () => this.showTeacherSection('analytics'));
+        document.getElementById('attendanceTab').addEventListener('click', () => this.showTeacherSection('attendance'));
+
+        // Teacher Reports
+        document.getElementById('generateReportBtn').addEventListener('click', () => this.handleGenerateReport());
+        
+        // Teacher Analytics
+        document.getElementById('loadAnalyticsBtn').addEventListener('click', () => this.handleLoadTeacherAnalytics());
+        
+        // Attendance
+        document.getElementById('attendanceLevel').addEventListener('change', () => this.loadAttendanceStudents());
+        document.getElementById('attendanceDate').addEventListener('change', () => this.loadAttendanceStudents());
+        document.getElementById('loadAttendanceBtn').addEventListener('click', () => this.loadAttendanceStudents());
+        document.getElementById('attendanceForm').addEventListener('submit', (e) => this.handleSubmitAttendance(e));
+
+        // Student tabs
+        document.getElementById('studentGradesTab').addEventListener('click', () => this.showStudentSection('grades'));
+        document.getElementById('studentNotificationsTab').addEventListener('click', () => this.showStudentSection('notifications'));
+        document.getElementById('studentReportsTab').addEventListener('click', () => this.showStudentSection('reports'));
+
+        // Student Reports
+        document.getElementById('downloadGradeReportBtn').addEventListener('click', () => this.downloadGradeReport());
+        document.getElementById('downloadPerformanceReportBtn').addEventListener('click', () => this.downloadPerformanceReport());
     }
 
     switchAuthTab(tab) {
@@ -1505,6 +1555,779 @@ class PerformanceTracker {
             console.error('Error deleting academic year:', error);
             this.showMessage('Failed to delete academic year', 'error');
         }
+    }
+
+    // New feature methods
+    showAdminSection(section) {
+        // Hide all sections
+        document.getElementById('usersManagementSection').style.display = 'none';
+        document.getElementById('invitationsSection').style.display = 'none';
+        document.getElementById('bulkImportSection').style.display = 'none';
+        document.getElementById('announcementsSection').style.display = 'none';
+        document.getElementById('adminAnalyticsSection').style.display = 'none';
+        document.getElementById('auditLogsSection').style.display = 'none';
+
+        // Remove active border from all tabs
+        document.getElementById('usersManagementTab').classList.remove('border-primary');
+        document.getElementById('usersManagementTab').classList.add('border-transparent');
+        document.getElementById('invitationsTab').classList.remove('border-primary');
+        document.getElementById('invitationsTab').classList.add('border-transparent');
+        document.getElementById('bulkImportTab').classList.remove('border-primary');
+        document.getElementById('bulkImportTab').classList.add('border-transparent');
+        document.getElementById('announcementsTab').classList.remove('border-primary');
+        document.getElementById('announcementsTab').classList.add('border-transparent');
+        document.getElementById('analyticsTab').classList.remove('border-primary');
+        document.getElementById('analyticsTab').classList.add('border-transparent');
+        document.getElementById('auditLogsTab').classList.remove('border-primary');
+        document.getElementById('auditLogsTab').classList.add('border-transparent');
+
+        // Show selected section and mark tab as active
+        if (section === 'users') {
+            document.getElementById('usersManagementSection').style.display = 'block';
+            document.getElementById('usersManagementTab').classList.remove('border-transparent');
+            document.getElementById('usersManagementTab').classList.add('border-primary');
+            this.showUsers('admins');
+        } else if (section === 'invitations') {
+            document.getElementById('invitationsSection').style.display = 'block';
+            document.getElementById('invitationsTab').classList.remove('border-transparent');
+            document.getElementById('invitationsTab').classList.add('border-primary');
+            this.loadInvitations();
+        } else if (section === 'bulkImport') {
+            document.getElementById('bulkImportSection').style.display = 'block';
+            document.getElementById('bulkImportTab').classList.remove('border-transparent');
+            document.getElementById('bulkImportTab').classList.add('border-primary');
+        } else if (section === 'announcements') {
+            document.getElementById('announcementsSection').style.display = 'block';
+            document.getElementById('announcementsTab').classList.remove('border-transparent');
+            document.getElementById('announcementsTab').classList.add('border-primary');
+        } else if (section === 'analytics') {
+            const analyticsSection = document.getElementById('adminAnalyticsSection');
+            analyticsSection.style.display = 'block';
+            console.log('Analytics section visible:', analyticsSection.style.display);
+            document.getElementById('analyticsTab').classList.remove('border-transparent');
+            document.getElementById('analyticsTab').classList.add('border-primary');
+            this.loadAnalyticsYears();
+        } else if (section === 'auditLogs') {
+            document.getElementById('auditLogsSection').style.display = 'block';
+            document.getElementById('auditLogsTab').classList.remove('border-transparent');
+            document.getElementById('auditLogsTab').classList.add('border-primary');
+            this.loadAuditLogs();
+        }
+    }
+
+    showSendInvitationModal() {
+        document.getElementById('sendInvitationModal').classList.remove('hidden');
+    }
+
+    hideSendInvitationModal() {
+        document.getElementById('sendInvitationModal').classList.add('hidden');
+        document.getElementById('sendInvitationForm').reset();
+    }
+
+    async handleSendInvitation(e) {
+        e.preventDefault();
+        const email = document.getElementById('inviteEmail').value;
+        const role = document.getElementById('inviteRole').value;
+
+        try {
+            const response = await fetch('/api/invitations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ email, role })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.showMessage('Invitation sent successfully', 'success');
+                this.hideSendInvitationModal();
+                this.loadInvitations();
+            } else {
+                this.showMessage(data.message || 'Failed to send invitation', 'error');
+            }
+        } catch (error) {
+            console.error('Error sending invitation:', error);
+            this.showMessage('Error sending invitation', 'error');
+        }
+    }
+
+    async loadInvitations() {
+        try {
+            const response = await fetch('/api/invitations', {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            const invitations = await response.json();
+            const container = document.getElementById('invitationsContainer');
+            container.innerHTML = '';
+
+            if (invitations.length === 0) {
+                container.innerHTML = '<p class="text-gray-600">No invitations yet</p>';
+                return;
+            }
+
+            invitations.forEach(inv => {
+                const statusColor = inv.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                                   inv.status === 'accepted' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                const html = `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium">${inv.email}</p>
+                                <p class="text-sm text-gray-600">Role: ${inv.role}</p>
+                                <p class="text-sm text-gray-600">Expires: ${new Date(inv.expiresAt).toLocaleDateString()}</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-sm ${statusColor}">${inv.status}</span>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        } catch (error) {
+            console.error('Error loading invitations:', error);
+            this.showMessage('Error loading invitations', 'error');
+        }
+    }
+
+    showBulkImportModal(type) {
+        this.currentImportType = type;
+        document.getElementById('bulkImportModal').classList.remove('hidden');
+    }
+
+    hideBulkImportModal() {
+        document.getElementById('bulkImportModal').classList.add('hidden');
+        document.getElementById('bulkImportForm').reset();
+    }
+
+    async handleBulkImport(e) {
+        e.preventDefault();
+        const csv = document.getElementById('csvData').value;
+        const type = this.currentImportType;
+
+        try {
+            const endpoint = type === 'students' ? '/api/admin/import/students' : '/api/admin/import/teachers';
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ csv })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.showMessage(`Import successful: ${data.success.length} imported`, 'success');
+                this.displayImportResults(data);
+                this.hideBulkImportModal();
+            } else {
+                this.showMessage(data.message || 'Import failed', 'error');
+            }
+        } catch (error) {
+            console.error('Error importing:', error);
+            this.showMessage('Error importing data', 'error');
+        }
+    }
+
+    displayImportResults(results) {
+        const container = document.getElementById('importResultsContainer');
+        container.innerHTML = `
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                <h3 class="font-bold text-green-900">Import Results</h3>
+                <p class="text-sm text-green-800">Successful: ${results.success.length}</p>
+                <p class="text-sm text-red-800">Failed: ${results.errors.length}</p>
+            </div>
+        `;
+    }
+
+    async handleSendAnnouncement(e) {
+        e.preventDefault();
+        const title = document.getElementById('announcementTitle').value;
+        const message = document.getElementById('announcementMessage').value;
+        const recipients = document.getElementById('announcementRecipients').value;
+
+        try {
+            const response = await fetch('/api/admin/announcements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ title, message, recipients })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.showMessage(`Announcement sent to ${data.recipientCount} users`, 'success');
+                document.getElementById('announcementForm').reset();
+            } else {
+                this.showMessage(data.message || 'Failed to send announcement', 'error');
+            }
+        } catch (error) {
+            console.error('Error sending announcement:', error);
+            this.showMessage('Error sending announcement', 'error');
+        }
+    }
+
+    loadAnalyticsYears() {
+        const yearSelect = document.getElementById('analyticsYear');
+        if (!yearSelect) return;
+        
+        // Load from existing academic years
+        fetch('/api/admin/academic-years', {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        })
+        .then(r => r.json())
+        .then(years => {
+            console.log('Years fetched:', years);
+            if (years && years.length > 0) {
+                // Reset and populate
+                yearSelect.innerHTML = '';
+                years.forEach((y, index) => {
+                    const opt = document.createElement('option');
+                    opt.value = y.name || y.year;
+                    opt.textContent = y.name || y.year;
+                    yearSelect.appendChild(opt);
+                });
+                yearSelect.value = years[0].name || years[0].year;
+            }
+        })
+        .catch(err => console.error('Error loading years:', err));
+    }
+
+    async handleLoadAnalytics(e) {
+        e.preventDefault();
+        
+        // Prevent duplicate submissions
+        if (this.analyticsLoading) return;
+        this.analyticsLoading = true;
+        
+        const year = document.getElementById('analyticsYear').value;
+        const term = document.getElementById('analyticsTerm').value;
+        console.log('Loading analytics for year:', year, 'term:', term);
+
+        if (!year || !term) {
+            this.showMessage('Please select academic year and term', 'error');
+            this.analyticsLoading = false;
+            return;
+        }
+
+        try {
+            const url = `/api/analytics/overview?academicYear=${year}&term=${term}`;
+            console.log('Fetching:', url);
+            const response = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            const data = await response.json();
+            console.log('Analytics response:', data);
+            const container = document.getElementById('analyticsContainer');
+            const analyticsSection = document.getElementById('adminAnalyticsSection');
+            console.log('Container:', container);
+            console.log('Section:', analyticsSection);
+
+            if (response.ok && data && data.summary) {
+                let html = `
+                    <div style="background-color: #dbeafe; border: 1px solid #bfdbfe; border-radius: 0.5rem; padding: 1rem; margin-top: 2rem; display: block;">
+                        <h3 style="font-weight: bold; margin-bottom: 0.75rem;">Institution Summary</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;">
+                            <div><p style="font-size: 0.875rem; color: #4b5563;">Total Students</p><p style="font-size: 1.5rem; font-weight: bold;">${data.summary.totalStudents || 0}</p></div>
+                            <div><p style="font-size: 0.875rem; color: #4b5563;">Total Courses</p><p style="font-size: 1.5rem; font-weight: bold;">${data.summary.totalCourses || 0}</p></div>
+                            <div><p style="font-size: 0.875rem; color: #4b5563;">Institution Average</p><p style="font-size: 1.5rem; font-weight: bold;">${Math.round(data.summary.institutionAverage * 100) / 100 || 0}%</p></div>
+                            <div><p style="font-size: 0.875rem; color: #4b5563;">Levels with Data</p><p style="font-size: 1.5rem; font-weight: bold;">${data.summary.levelsWithData || 0}</p></div>
+                        </div>
+                    </div>
+                `;
+                
+                if (data.levelBreakdown && data.levelBreakdown.length > 0) {
+                    html += `
+                        <div style="background-color: #dcfce7; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 1rem; margin-top: 1rem; display: block;">
+                            <h3 style="font-weight: bold; margin-bottom: 0.75rem;">Level Breakdown</h3>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    `;
+                    data.levelBreakdown.forEach(level => {
+                        html += `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background-color: white; border-radius: 0.25rem; display: flex;">
+                                <span>${level.level}</span>
+                                <span style="font-weight: bold;">${level.studentCount} students, ${level.courseCount} courses</span>
+                            </div>
+                        `;
+                    });
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Replace entire section content to ensure visibility
+                analyticsSection.innerHTML = analyticsSection.innerHTML.substring(0, analyticsSection.innerHTML.indexOf('<div id="analyticsContainer"')) + 
+                    '<div id="analyticsContainer" style="display: block; width: 100%; visibility: visible;">' + html + '</div>';
+                console.log('Analytics rendered successfully');
+            } else {
+                container.innerHTML = '<p style="color: #6b7280; margin-top: 2rem; display: block;">No analytics data available</p>';
+                console.log('Response not ok or no summary data');
+            }
+        } catch (error) {
+            console.error('Error loading analytics:', error);
+            this.showMessage('Error loading analytics', 'error');
+        } finally {
+            this.analyticsLoading = false;
+        }
+    }
+
+    async loadAuditLogs() {
+         try {
+             const response = await fetch('/api/backup/audit-logs', {
+                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+             });
+
+             const data = await response.json();
+             const container = document.getElementById('auditLogsContainer');
+             container.innerHTML = '';
+
+             if (!data.logs || data.logs.length === 0) {
+                 container.innerHTML = '<p class="text-gray-600">No audit logs available</p>';
+                 return;
+             }
+
+             data.logs.slice(0, 50).forEach(log => {
+                 const html = `
+                     <div class="border border-gray-200 rounded-lg p-3 text-sm">
+                         <p class="font-medium">${log.action}</p>
+                         <p class="text-gray-600">${new Date(log.createdAt).toLocaleString()}</p>
+                     </div>
+                 `;
+                 container.innerHTML += html;
+             });
+         } catch (error) {
+             console.error('Error loading audit logs:', error);
+         }
+     }
+
+    // Teacher Section Methods
+    showTeacherSection(section) {
+        // Hide all sections
+        document.getElementById('dashboardSection').classList.add('hidden');
+        document.getElementById('reportsSection').classList.add('hidden');
+        document.getElementById('analyticsSection').classList.add('hidden');
+        document.getElementById('attendanceSection').classList.add('hidden');
+
+        // Remove active border from all tabs
+        ['dashboardTab', 'reportsTab', 'teacherAnalyticsTab', 'attendanceTab'].forEach(id => {
+            document.getElementById(id).classList.remove('border-primary');
+            document.getElementById(id).classList.add('border-transparent');
+        });
+
+        // Show selected section
+        if (section === 'dashboard') {
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('dashboardTab').classList.add('border-primary');
+            this.loadTeacherDashboard();
+        } else if (section === 'reports') {
+            document.getElementById('reportsSection').classList.remove('hidden');
+            document.getElementById('reportsTab').classList.add('border-primary');
+            this.loadTeacherReports();
+        } else if (section === 'analytics') {
+            document.getElementById('analyticsSection').classList.remove('hidden');
+            document.getElementById('teacherAnalyticsTab').classList.add('border-primary');
+        } else if (section === 'attendance') {
+            document.getElementById('attendanceSection').classList.remove('hidden');
+            document.getElementById('attendanceTab').classList.add('border-primary');
+        }
+    }
+
+    async loadTeacherReports() {
+        try {
+            const response = await fetch(`/api/reports/teacher?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.allCourses = data.courses || [];
+                this.populateReportCourses();
+                
+                // Add event listener for level change
+                document.getElementById('reportLevel').addEventListener('change', () => this.populateReportCourses());
+            }
+        } catch (error) {
+            console.error('Error loading reports:', error);
+        }
+    }
+
+    populateReportCourses() {
+        const selectedLevel = document.getElementById('reportLevel').value;
+        const select = document.getElementById('reportCourse');
+        select.innerHTML = '<option value="">All Courses</option>';
+        
+        let filteredCourses = this.allCourses;
+        if (selectedLevel) {
+            filteredCourses = this.allCourses.filter(course => course.level === selectedLevel);
+        }
+        
+        filteredCourses.forEach(course => {
+            const opt = document.createElement('option');
+            opt.value = course._id;
+            opt.textContent = course.name;
+            select.appendChild(opt);
+        });
+    }
+
+    async handleGenerateReport() {
+        const level = document.getElementById('reportLevel').value;
+        const course = document.getElementById('reportCourse').value;
+        
+        try {
+            const params = new URLSearchParams({
+                academicYear: this.currentAcademicYear,
+                term: this.currentTerm,
+                ...(level && { level }),
+                ...(course && { courseId: course })
+            });
+
+            const response = await fetch(`/api/reports/generate?${params}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const container = document.getElementById('reportContainer');
+                container.innerHTML = '';
+                
+                if (data.students && data.students.length > 0) {
+                    const table = document.createElement('div');
+                    table.className = 'overflow-auto border rounded-lg';
+                    table.innerHTML = `
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-100 border-b">
+                                <tr>
+                                    <th class="p-2 text-left">Student</th>
+                                    <th class="p-2 text-left">Level</th>
+                                    <th class="p-2 text-center">Course</th>
+                                    <th class="p-2 text-center">Average</th>
+                                    <th class="p-2 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.students.map(student => `
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="p-2">${student.firstName} ${student.lastName}</td>
+                                        <td class="p-2">${student.level || '-'}</td>
+                                        <td class="p-2 text-center">${data.courseFilter || 'All'}</td>
+                                        <td class="p-2 text-center font-semibold">${student.average ? student.average.toFixed(2) : '-'}%</td>
+                                        <td class="p-2 text-center">
+                                            <span class="px-2 py-1 rounded text-xs font-semibold ${student.average >= 70 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                                ${student.average >= 70 ? 'Pass' : 'Fail'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    container.appendChild(table);
+
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 mt-4';
+                    downloadBtn.textContent = 'Download as PDF';
+                    downloadBtn.addEventListener('click', () => this.downloadReportPDF(data));
+                    container.appendChild(downloadBtn);
+                } else {
+                    container.innerHTML = '<p class="text-gray-600 text-center py-4">No data available for selected filters</p>';
+                }
+            }
+        } catch (error) {
+            console.error('Error generating report:', error);
+            this.showMessage('Error generating report', 'error');
+        }
+    }
+
+    async handleLoadTeacherAnalytics() {
+        const level = document.getElementById('analyticsLevel').value;
+        
+        try {
+            const params = new URLSearchParams({
+                academicYear: this.currentAcademicYear,
+                term: this.currentTerm,
+                ...(level && { level })
+            });
+
+            const response = await fetch(`/api/analytics/class?${params}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const container = document.getElementById('analyticsContainer');
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                            <p class="text-sm text-gray-600">Class Average</p>
+                            <p class="text-2xl font-bold text-blue-600">${data.classAverage ? data.classAverage.toFixed(2) : '-'}%</p>
+                        </div>
+                        <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                            <p class="text-sm text-gray-600">Highest Score</p>
+                            <p class="text-2xl font-bold text-green-600">${data.highestScore || '-'}%</p>
+                        </div>
+                        <div class="bg-red-50 rounded-lg p-4 border border-red-200">
+                            <p class="text-sm text-gray-600">Lowest Score</p>
+                            <p class="text-2xl font-bold text-red-600">${data.lowestScore || '-'}%</p>
+                        </div>
+                        <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                            <p class="text-sm text-gray-600">Pass Rate</p>
+                            <p class="text-2xl font-bold text-purple-600">${data.passRate || '-'}%</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 border">
+                        <h3 class="font-semibold mb-3">Student Performance Distribution</h3>
+                        <div class="space-y-2">
+                            <div><p class="text-sm text-gray-600">Excellent (90-100): <span class="font-bold">${data.distribution?.excellent || 0}</span></p></div>
+                            <div><p class="text-sm text-gray-600">Good (75-89): <span class="font-bold">${data.distribution?.good || 0}</span></p></div>
+                            <div><p class="text-sm text-gray-600">Average (60-74): <span class="font-bold">${data.distribution?.average || 0}</span></p></div>
+                            <div><p class="text-sm text-gray-600">Below Average (<60): <span class="font-bold">${data.distribution?.belowAverage || 0}</span></p></div>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading analytics:', error);
+            this.showMessage('Error loading analytics', 'error');
+        }
+    }
+
+    async loadAttendanceStudents() {
+        const level = document.getElementById('attendanceLevel').value;
+        const date = document.getElementById('attendanceDate').value;
+
+        if (!level) {
+            this.showMessage('Please select a level', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/attendance/students?level=${level}&date=${date || new Date().toISOString().split('T')[0]}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const students = await response.json();
+                const container = document.getElementById('attendanceStudentsContainer');
+                container.innerHTML = '';
+
+                if (students.length === 0) {
+                    container.innerHTML = '<p class="text-gray-600">No students in this level</p>';
+                    return;
+                }
+
+                students.forEach(student => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center gap-3 p-3 bg-white rounded border';
+                    div.innerHTML = `
+                        <input type="checkbox" class="attendance-checkbox" data-student-id="${student._id}" />
+                        <label class="flex-1 cursor-pointer">${student.firstName} ${student.lastName}</label>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading students:', error);
+            this.showMessage('Error loading students', 'error');
+        }
+    }
+
+    async handleSubmitAttendance(e) {
+        e.preventDefault();
+        const level = document.getElementById('attendanceLevel').value;
+        const date = document.getElementById('attendanceDate').value;
+        const checkboxes = document.querySelectorAll('.attendance-checkbox:checked');
+        const presentStudents = Array.from(checkboxes).map(cb => cb.dataset.studentId);
+
+        if (!level || !date) {
+            this.showMessage('Please select level and date', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/attendance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    level,
+                    date,
+                    presentStudents,
+                    academicYear: this.currentAcademicYear,
+                    term: this.currentTerm
+                })
+            });
+
+            if (response.ok) {
+                this.showMessage('Attendance recorded successfully', 'success');
+                document.getElementById('attendanceForm').reset();
+                document.getElementById('attendanceStudentsContainer').innerHTML = '';
+            } else {
+                const data = await response.json();
+                this.showMessage(data.message || 'Failed to submit attendance', 'error');
+            }
+        } catch (error) {
+            console.error('Error submitting attendance:', error);
+            this.showMessage('Error submitting attendance', 'error');
+        }
+    }
+
+    // Student Section Methods
+    showStudentSection(section) {
+        // Hide all sections
+        document.getElementById('studentGradesSection').classList.add('hidden');
+        document.getElementById('studentNotificationsSection').classList.add('hidden');
+        document.getElementById('studentReportsSection').classList.add('hidden');
+
+        // Remove active border from all tabs
+        ['studentGradesTab', 'studentNotificationsTab', 'studentReportsTab'].forEach(id => {
+            document.getElementById(id).classList.remove('border-primary');
+            document.getElementById(id).classList.add('border-transparent');
+        });
+
+        // Show selected section
+        if (section === 'grades') {
+            document.getElementById('studentGradesSection').classList.remove('hidden');
+            document.getElementById('studentGradesTab').classList.add('border-primary');
+            this.loadStudentGrades();
+        } else if (section === 'notifications') {
+            document.getElementById('studentNotificationsSection').classList.remove('hidden');
+            document.getElementById('studentNotificationsTab').classList.add('border-primary');
+            this.loadStudentNotifications();
+        } else if (section === 'reports') {
+            document.getElementById('studentReportsSection').classList.remove('hidden');
+            document.getElementById('studentReportsTab').classList.add('border-primary');
+        }
+    }
+
+    async loadStudentGrades() {
+        try {
+            const response = await fetch(`/api/students/grades?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('studentOverallAverage').textContent = data.overallAverage ? data.overallAverage.toFixed(2) + '%' : '--';
+                document.getElementById('studentCourseCount').textContent = data.courseCount || 0;
+                document.getElementById('studentAssessmentCount').textContent = data.assessmentCount || 0;
+            }
+        } catch (error) {
+            console.error('Error loading grades:', error);
+        }
+    }
+
+    async loadStudentNotifications() {
+        try {
+            const response = await fetch('/api/students/notifications', {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const notifications = await response.json();
+                const container = document.getElementById('notificationsContainer');
+                container.innerHTML = '';
+
+                if (notifications.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-8">No notifications yet</p>';
+                    return;
+                }
+
+                notifications.forEach(notif => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4';
+                    div.innerHTML = `
+                        <h3 class="font-semibold text-blue-900">${notif.title}</h3>
+                        <p class="text-sm text-blue-800 mt-1">${notif.message}</p>
+                        <p class="text-xs text-blue-600 mt-2">${new Date(notif.createdAt).toLocaleDateString()}</p>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading notifications:', error);
+        }
+    }
+
+    async downloadGradeReport() {
+        try {
+            const response = await fetch(`/api/reports/download/grades?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `grade-report-${this.currentAcademicYear}-${this.currentTerm}.pdf`;
+                a.click();
+                this.showMessage('Report downloaded successfully', 'success');
+            } else {
+                this.showMessage('Failed to download report', 'error');
+            }
+        } catch (error) {
+            console.error('Error downloading report:', error);
+            this.showMessage('Error downloading report', 'error');
+        }
+    }
+
+    async downloadPerformanceReport() {
+        try {
+            const response = await fetch(`/api/reports/download/performance?academicYear=${this.currentAcademicYear}&term=${this.currentTerm}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `performance-report-${this.currentAcademicYear}-${this.currentTerm}.pdf`;
+                a.click();
+                this.showMessage('Report downloaded successfully', 'success');
+            } else {
+                this.showMessage('Failed to download report', 'error');
+            }
+        } catch (error) {
+            console.error('Error downloading report:', error);
+            this.showMessage('Error downloading report', 'error');
+        }
+    }
+
+    downloadReportPDF(data) {
+        // Basic PDF generation - consider using a library like jsPDF for production
+        const csv = [
+            ['Student', 'Level', 'Average', 'Status'].join(',')
+        ];
+        
+        if (data.students) {
+            data.students.forEach(student => {
+                csv.push([
+                    `"${student.firstName} ${student.lastName}"`,
+                    student.level || '-',
+                    student.average ? student.average.toFixed(2) : '-',
+                    student.average >= 70 ? 'Pass' : 'Fail'
+                ].join(','));
+            });
+        }
+
+        const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `class-report-${this.currentAcademicYear}-${this.currentTerm}.csv`;
+        a.click();
     }
 }
 

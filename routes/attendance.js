@@ -8,9 +8,73 @@ const router = express.Router();
 
 router.use(auth);
 
+// Load students for attendance by level
+router.get('/students', requireRole(['teacher']), async (req, res) => {
+  try {
+    const { level, date } = req.query;
+
+    if (!level) {
+      return res.status(400).json({ message: 'Level is required' });
+    }
+
+    const User = require('../models/User');
+    const students = await User.find({ 
+      role: 'student', 
+      level 
+    }).select('_id firstName lastName').lean();
+
+    res.json(students);
+  } catch (error) {
+    console.error('Error loading students:', error);
+    res.status(500).json({ message: 'Error loading students' });
+  }
+});
+
+// Record attendance (simple format)
+router.post('/', requireRole(['teacher']), async (req, res) => {
+  try {
+    const { level, date, presentStudents, academicYear, term } = req.body;
+
+    if (!level || !date || !academicYear || !term) {
+      return res.status(400).json({ message: 'Level, date, academic year, and term are required' });
+    }
+
+    const User = require('../models/User');
+    const allStudents = await User.find({ 
+      role: 'student', 
+      level 
+    }).select('_id').lean();
+
+    const attendanceRecords = allStudents.map(student => ({
+      student: student._id,
+      status: presentStudents.includes(student._id.toString()) ? 'present' : 'absent',
+      note: ''
+    }));
+
+    // Create attendance record for all levels (without specific course)
+    const attendance = new Attendance({
+      date: new Date(date),
+      academicYear,
+      term,
+      recordedBy: req.user._id,
+      records: attendanceRecords,
+      levelAttendance: level
+    });
+
+    await attendance.save();
+
+    res.json({
+      message: 'Attendance recorded successfully',
+      attendance
+    });
+  } catch (error) {
+    console.error('Attendance recording error:', error);
+    res.status(500).json({ message: 'Error recording attendance' });
+  }
+});
+
 // Record attendance for a course (teacher only)
-router.post('/', requireRole(['teacher']), [
-  body('courseId').isMongoId().withMessage('Valid course ID is required'),
+router.post('/course/:courseId', requireRole(['teacher']), [
   body('date').isISO8601().withMessage('Valid date is required'),
   body('academicYear').notEmpty().withMessage('Academic year is required'),
   body('term').isIn(['1st Term', '2nd Term', '3rd Term']).withMessage('Valid term is required'),
@@ -24,7 +88,8 @@ router.post('/', requireRole(['teacher']), [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { courseId, date, academicYear, term, records } = req.body;
+    const { courseId } = req.params;
+    const { date, academicYear, term, records } = req.body;
 
     // Verify course ownership
     const course = await Course.findById(courseId);

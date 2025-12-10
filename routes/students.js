@@ -2,6 +2,7 @@ const express = require('express');
 const Course = require('../models/Course');
 const Assessment = require('../models/Assessment');
 const AcademicYear = require('../models/AcademicYear');
+const Notification = require('../models/Notification');
 const { auth, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
@@ -180,6 +181,65 @@ router.get('/courses/:courseId', async (req, res) => {
   } catch (error) {
     console.error('Course performance error:', error);
     res.status(500).json({ message: 'Error fetching course performance' });
+  }
+});
+
+// Get student's grades summary
+router.get('/grades', async (req, res) => {
+  try {
+    const { academicYear, term } = req.query;
+
+    if (!academicYear || !term) {
+      return res.status(400).json({ message: 'Academic year and term are required' });
+    }
+
+    const courses = await Course.find({ students: req.user._id }).lean();
+
+    let totalScore = 0;
+    let totalMaxMarks = 0;
+    let assessmentCount = 0;
+
+    for (const course of courses) {
+      const assessments = await Assessment.find({
+        course: course._id,
+        academicYear,
+        term
+      }).lean();
+
+      for (const assessment of assessments) {
+        const mark = assessment.marks.find(m => m.student.toString() === req.user._id.toString());
+        if (mark) {
+          totalScore += mark.score;
+          totalMaxMarks += assessment.maxMarks;
+          assessmentCount++;
+        }
+      }
+    }
+
+    const overallAverage = totalMaxMarks > 0 ? (totalScore / totalMaxMarks) * 100 : 0;
+
+    res.json({
+      overallAverage: Math.round(overallAverage * 100) / 100,
+      courseCount: courses.length,
+      assessmentCount
+    });
+  } catch (error) {
+    console.error('Student grades error:', error);
+    res.status(500).json({ message: 'Error fetching grades' });
+  }
+});
+
+// Get student notifications
+router.get('/notifications', async (req, res) => {
+  try {
+    const notifications = await Notification.find({
+      recipient: req.user._id
+    }).sort({ createdAt: -1 }).limit(20).lean();
+
+    res.json(notifications);
+  } catch (error) {
+    console.error('Student notifications error:', error);
+    res.status(500).json({ message: 'Error fetching notifications' });
   }
 });
 

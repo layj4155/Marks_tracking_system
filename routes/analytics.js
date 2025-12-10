@@ -289,4 +289,86 @@ router.get('/teacher/me', requireRole(['teacher']), async (req, res) => {
   }
 });
 
+// Teacher: Get class analytics
+router.get('/class', requireRole(['teacher']), async (req, res) => {
+  try {
+    const { academicYear, term, level } = req.query;
+
+    if (!academicYear || !term) {
+      return res.status(400).json({ message: 'Academic year and term are required' });
+    }
+
+    let query = { teacher: req.user._id };
+    if (level) query.level = level;
+
+    const Course = require('../models/Course');
+    const Assessment = require('../models/Assessment');
+    const courses = await Course.find(query)
+      .populate('students', 'firstName lastName')
+      .lean();
+
+    if (courses.length === 0) {
+      return res.json({
+        classAverage: 0,
+        highestScore: 0,
+        lowestScore: 0,
+        passRate: 0,
+        distribution: { excellent: 0, good: 0, average: 0, belowAverage: 0 }
+      });
+    }
+
+    let allScores = [];
+    let scoreCount = 0;
+
+    for (const course of courses) {
+      const assessments = await Assessment.find({
+        course: course._id,
+        academicYear,
+        term
+      }).lean();
+
+      for (const assessment of assessments) {
+        for (const mark of assessment.marks) {
+          const percentage = (mark.score / assessment.maxMarks) * 100;
+          allScores.push(percentage);
+          scoreCount++;
+        }
+      }
+    }
+
+    if (allScores.length === 0) {
+      return res.json({
+        classAverage: 0,
+        highestScore: 0,
+        lowestScore: 0,
+        passRate: 0,
+        distribution: { excellent: 0, good: 0, average: 0, belowAverage: 0 }
+      });
+    }
+
+    const classAverage = allScores.reduce((a, b) => a + b) / allScores.length;
+    const highestScore = Math.max(...allScores);
+    const lowestScore = Math.min(...allScores);
+    const passRate = (allScores.filter(s => s >= 70).length / allScores.length) * 100;
+
+    const distribution = {
+      excellent: allScores.filter(s => s >= 90).length,
+      good: allScores.filter(s => s >= 75 && s < 90).length,
+      average: allScores.filter(s => s >= 60 && s < 75).length,
+      belowAverage: allScores.filter(s => s < 60).length
+    };
+
+    res.json({
+      classAverage: Math.round(classAverage * 100) / 100,
+      highestScore: Math.round(highestScore * 100) / 100,
+      lowestScore: Math.round(lowestScore * 100) / 100,
+      passRate: Math.round(passRate * 100) / 100,
+      distribution
+    });
+  } catch (error) {
+    console.error('Class analytics error:', error);
+    res.status(500).json({ message: 'Error fetching class analytics' });
+  }
+});
+
 module.exports = router;
