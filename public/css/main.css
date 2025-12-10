@@ -671,10 +671,16 @@ button[title="Close assessment management"]:hover {
 
 /* Mobile Responsive Improvements */
 @media (max-width: 640px) {
-  /* Make buttons full width on mobile */
-  button, .btn {
-    min-height: 2.5rem;
-    font-size: 1rem;
+  /* Uniform button sizing */
+  button, .btn, input[type="button"], input[type="submit"] {
+    min-height: 3rem !important;
+    height: auto !important;
+    font-size: 1rem !important;
+    padding: 0.75rem 1rem !important;
+    width: 100% !important;
+    display: block !important;
+    margin-bottom: 0.75rem !important;
+    border: none;
   }
   
   /* Reduce padding on mobile */
@@ -682,16 +688,26 @@ button[title="Close assessment management"]:hover {
   .p-6 { padding: 1rem !important; }
   .p-8 { padding: 1.5rem !important; }
   
+  /* Card spacing */
+  .bg-gray-50, .bg-white, .rounded-lg {
+    margin-bottom: 1rem !important;
+  }
+  
   /* Stack flex items vertically */
   .flex {
-    flex-direction: column;
+    flex-direction: column !important;
   }
   
   .flex-row {
-    flex-direction: row;
+    flex-direction: row !important;
+  }
+  
+  .flex-wrap {
+    flex-wrap: wrap !important;
   }
   
   /* Reduce gaps */
+  .gap-2 { gap: 0.25rem !important; }
   .gap-4 { gap: 0.5rem !important; }
   .gap-6 { gap: 0.75rem !important; }
   
@@ -703,9 +719,10 @@ button[title="Close assessment management"]:hover {
   }
   
   /* Responsive font sizes */
-  .text-3xl { font-size: 1.5rem; }
-  .text-2xl { font-size: 1.25rem; }
-  .text-xl { font-size: 1.1rem; }
+  .text-3xl { font-size: 1.5rem !important; }
+  .text-2xl { font-size: 1.25rem !important; }
+  .text-xl { font-size: 1.1rem !important; }
+  .text-lg { font-size: 1rem !important; }
   
   /* Make tables scrollable on mobile */
   .overflow-auto {
@@ -713,14 +730,12 @@ button[title="Close assessment management"]:hover {
     max-width: 100%;
   }
   
-  /* Reduce button spacing */
-  button + button {
-    margin-left: 0.25rem;
-  }
-  
-  /* Make course cards stack */
-  .rounded-lg {
-    margin-bottom: 1rem;
+  /* Course cards and their buttons */
+  .bg-gray-50 button,
+  .bg-white button,
+  [class*="Card"] button {
+    width: 100% !important;
+    display: block !important;
   }
 }
 
@@ -728,13 +743,12 @@ button[title="Close assessment management"]:hover {
   /* Extra small devices */
   .p-4 { padding: 0.5rem !important; }
   .p-8 { padding: 1rem !important; }
-  .text-lg { font-size: 1rem; }
-  .text-xl { font-size: 1rem; }
   
-  /* Stack buttons */
-  button {
-    display: block;
-    width: 100% !important;
-    margin-bottom: 0.5rem;
+  /* Aggressive button sizing */
+  button, .btn {
+    min-height: 2.75rem !important;
+    font-size: 0.95rem !important;
+    padding: 0.65rem 0.75rem !important;
+    margin-bottom: 0.5rem !important;
   }
 }
