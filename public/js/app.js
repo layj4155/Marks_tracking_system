@@ -1335,22 +1335,34 @@ class PerformanceTracker {
     }
 
     async deleteUser(userId, userName) {
+        console.log('Delete user clicked:', userId, userName);
+        
         if (!confirm(`Are you sure you want to delete ${userName}? This action cannot be undone.`)) {
             return;
         }
 
         try {
-            const response = await fetch(`/api/admin/users/${userId}`, {
+            const url = `/api/admin/users/${userId}`;
+            console.log('Deleting user at:', url);
+            
+            const response = await fetch(url, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
+            console.log('Delete response status:', response.status);
+
             if (response.ok) {
-                await this.loadAllUsers();
-                await this.loadAdminDashboard();
                 this.showMessage('User deleted successfully', 'success');
+                // Reload the users list
+                const currentRole = document.querySelector('[id*="Tab"][class*="border-primary"]')?.id;
+                if (currentRole) {
+                    this.showUsers(currentRole.replace('Tab', '').toLowerCase());
+                }
+                await this.loadAdminDashboard();
             } else {
                 const data = await response.json();
+                console.error('Delete error:', data);
                 this.showMessage(data.message || 'Failed to delete user', 'error');
             }
         } catch (error) {
@@ -2333,3 +2345,6 @@ class PerformanceTracker {
 
 // Initialize the app
 const app = new PerformanceTracker();
+
+// Make app globally accessible for inline onclick handlers
+window.app = app;

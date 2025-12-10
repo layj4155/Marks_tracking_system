@@ -429,8 +429,24 @@ button:disabled {
    --tw-gradient-stops: #ef4444;
 }
 
+.from-blue-500 {
+   --tw-gradient-stops: #3b82f6;
+}
+
+.from-yellow-500 {
+   --tw-gradient-stops: #eab308;
+}
+
 .to-red-600 {
    --tw-gradient-stops: #dc2626;
+}
+
+.to-blue-600 {
+   --tw-gradient-stops: #2563eb;
+}
+
+.to-orange-500 {
+   --tw-gradient-stops: #f97316;
 }
 
 .to-pink-600 {
