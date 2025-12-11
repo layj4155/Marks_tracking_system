@@ -133,7 +133,10 @@ class PerformanceTracker {
 
         // Announcements
         document.getElementById('announcementForm').addEventListener('submit', (e) => this.handleSendAnnouncement(e));
-        document.getElementById('refreshAnnouncementsBtn').addEventListener('click', () => this.loadAnnouncements());
+        const refreshBtn = document.getElementById('refreshAnnouncementsBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => this.loadAnnouncements());
+        }
 
         // Teacher tabs
         document.getElementById('dashboardTab').addEventListener('click', () => this.showTeacherSection('dashboard'));
