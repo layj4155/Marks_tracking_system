@@ -11,7 +11,7 @@ if (!process.env.TEACHER_REG_CODE || !process.env.ADMIN_REG_CODE) {
 
 module.exports = {
   port: process.env.PORT || 3000,
-  mongoUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/marks_tracking_system',
+  mongoUri: process.env.MONGODB_URI || 'mongodb+srv://leighaiden11_db_user:uq3XnNJYiivLSVFR@marks-tracking-system.oyleqr2.mongodb.net/?appName=marks-tracking-system',
   jwtSecret: process.env.JWT_SECRET,
   corsOrigins: (process.env.CORS_ORIGINS || 'https://eduanalyze.vercel.app,http://localhost:3000').split(',').map(s => s.trim()),
   teacherRegCode: process.env.TEACHER_REG_CODE,
