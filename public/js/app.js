@@ -133,6 +133,7 @@ class PerformanceTracker {
 
         // Announcements
         document.getElementById('announcementForm').addEventListener('submit', (e) => this.handleSendAnnouncement(e));
+        document.getElementById('refreshAnnouncementsBtn').addEventListener('click', () => this.loadAnnouncements());
 
         // Teacher tabs
         document.getElementById('dashboardTab').addEventListener('click', () => this.showTeacherSection('dashboard'));
@@ -1629,6 +1630,7 @@ class PerformanceTracker {
             document.getElementById('announcementsSection').style.display = 'block';
             document.getElementById('announcementsTab').classList.remove('border-transparent');
             document.getElementById('announcementsTab').classList.add('border-primary');
+            this.loadAnnouncements();
         } else if (section === 'analytics') {
             const analyticsSection = document.getElementById('adminAnalyticsSection');
             analyticsSection.style.display = 'block';
@@ -1774,34 +1776,111 @@ class PerformanceTracker {
     }
 
     async handleSendAnnouncement(e) {
-        e.preventDefault();
-        const title = document.getElementById('announcementTitle').value;
-        const message = document.getElementById('announcementMessage').value;
-        const recipients = document.getElementById('announcementRecipients').value;
+         e.preventDefault();
+         const title = document.getElementById('announcementTitle').value;
+         const message = document.getElementById('announcementMessage').value;
+         const recipients = document.getElementById('announcementRecipients').value;
 
-        try {
-            const response = await fetch(`/api/admin/announcements`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({ title, message, recipients })
-            });
+         try {
+             const response = await fetch(`/api/admin/announcements`, {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json',
+                     'Authorization': `Bearer ${localStorage.getItem('token')}`
+                 },
+                 body: JSON.stringify({ title, message, recipients })
+             });
 
-            const data = await response.json();
+             const data = await response.json();
 
-            if (response.ok) {
-                this.showMessage(`Announcement sent to ${data.recipientCount} users`, 'success');
-                document.getElementById('announcementForm').reset();
-            } else {
-                this.showMessage(data.message || 'Failed to send announcement', 'error');
-            }
-        } catch (error) {
-            console.error('Error sending announcement:', error);
-            this.showMessage('Error sending announcement', 'error');
-        }
-    }
+             if (response.ok) {
+                 this.showMessage(`Announcement sent to ${data.recipientCount} users`, 'success');
+                 document.getElementById('announcementForm').reset();
+                 this.loadAnnouncements();
+             } else {
+                 this.showMessage(data.message || 'Failed to send announcement', 'error');
+             }
+         } catch (error) {
+             console.error('Error sending announcement:', error);
+             this.showMessage('Error sending announcement', 'error');
+         }
+     }
+
+     async loadAnnouncements() {
+         try {
+             const response = await fetch(`/api/admin/announcements`, {
+                 headers: {
+                     'Authorization': `Bearer ${localStorage.getItem('token')}`
+                 }
+             });
+
+             const data = await response.json();
+             const container = document.getElementById('announcementsListContainer');
+
+             if (response.ok && data.announcements && data.announcements.length > 0) {
+                 container.innerHTML = data.announcements.map(announcement => `
+                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                         <div class="flex items-start justify-between mb-2">
+                             <div class="flex-1">
+                                 <h3 class="font-bold text-gray-800">${announcement.title || 'Untitled'}</h3>
+                                 <p class="text-sm text-gray-600 mt-1">${announcement.message || ''}</p>
+                                 <div class="flex gap-4 text-xs text-gray-500 mt-2">
+                                     <span>To: ${this.formatRecipients(announcement.recipients)}</span>
+                                     <span>${new Date(announcement.createdAt).toLocaleDateString()}</span>
+                                 </div>
+                             </div>
+                             <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors" onclick="app.deleteAnnouncement('${announcement._id}')">
+                                 Delete
+                             </button>
+                         </div>
+                     </div>
+                 `).join('');
+             } else {
+                 container.innerHTML = '<p class="text-gray-500 text-center py-8">No announcements yet</p>';
+             }
+         } catch (error) {
+             console.error('Error loading announcements:', error);
+             document.getElementById('announcementsListContainer').innerHTML = '<p class="text-red-500 text-center py-4">Error loading announcements</p>';
+         }
+     }
+
+     formatRecipients(recipients) {
+         const recipientMap = {
+             'all': 'All Users',
+             'students': 'All Students',
+             'teachers': 'All Teachers',
+             'level3': 'Level 3 Students',
+             'level4': 'Level 4 Students',
+             'level5': 'Level 5 Students'
+         };
+         return recipientMap[recipients] || recipients;
+     }
+
+     async deleteAnnouncement(announcementId) {
+         if (!confirm('Are you sure you want to delete this announcement?')) {
+             return;
+         }
+
+         try {
+             const response = await fetch(`/api/admin/announcements/${announcementId}`, {
+                 method: 'DELETE',
+                 headers: {
+                     'Authorization': `Bearer ${localStorage.getItem('token')}`
+                 }
+             });
+
+             if (response.ok) {
+                 this.showMessage('Announcement deleted successfully', 'success');
+                 this.loadAnnouncements();
+             } else {
+                 const data = await response.json();
+                 this.showMessage(data.message || 'Failed to delete announcement', 'error');
+             }
+         } catch (error) {
+             console.error('Error deleting announcement:', error);
+             this.showMessage('Error deleting announcement', 'error');
+         }
+     }
 
     loadAnalyticsYears() {
         const yearSelect = document.getElementById('analyticsYear');

@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Course = require('../models/Course');
 const Assessment = require('../models/Assessment');
 const AcademicYear = require('../models/AcademicYear');
+const Notification = require('../models/Notification');
 const { auth, requireRole } = require('../middleware/auth');
 const { importStudents, importTeachers, getCSVTemplate } = require('../services/bulkImport');
 const { sendAnnouncement } = require('../services/notifications');
@@ -479,7 +480,58 @@ router.get('/parents', async (req, res) => {
   } catch (error) {
     console.error('Fetch parents error:', error);
     res.status(500).json({ message: 'Error fetching parents' });
-  }
-});
+    }
+    });
 
-module.exports = router;
+    // Get all announcements
+    router.get('/announcements', async (req, res) => {
+    try {
+    const announcements = await Notification.find({ type: 'announcement' })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json({ announcements });
+    } catch (error) {
+    console.error('Fetch announcements error:', error);
+    res.status(500).json({ message: 'Error fetching announcements' });
+    }
+    });
+
+    // Delete announcement
+    router.delete('/announcements/:announcementId', async (req, res) => {
+    try {
+    const { announcementId } = req.params;
+
+    // Delete all notifications with this announcement (to all recipients)
+    const result = await Notification.deleteMany({
+      _id: announcementId,
+      type: 'announcement'
+    });
+
+    // Also try to delete by checking if it matches the pattern
+    if (result.deletedCount === 0) {
+      // If deletion by ID didn't work, delete all with same title and message from same day
+      const announcement = await Notification.findById(announcementId);
+      if (announcement) {
+        await Notification.deleteMany({
+          type: 'announcement',
+          title: announcement.title,
+          message: announcement.message,
+          createdAt: {
+            $gte: new Date(new Date(announcement.createdAt).setHours(0, 0, 0, 0)),
+            $lt: new Date(new Date(announcement.createdAt).setHours(23, 59, 59, 999))
+          }
+        });
+      } else {
+        return res.status(404).json({ message: 'Announcement not found' });
+      }
+    }
+
+    res.json({ message: 'Announcement deleted successfully' });
+    } catch (error) {
+    console.error('Delete announcement error:', error);
+    res.status(500).json({ message: 'Error deleting announcement' });
+    }
+    });
+
+    module.exports = router;
