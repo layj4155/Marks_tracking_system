@@ -53,10 +53,14 @@ class PerformanceTracker {
         });
 
         // Form submissions
-        document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
-        document.getElementById('registerForm').addEventListener('submit', (e) => this.handleRegister(e));
+         document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
+         document.getElementById('registerForm').addEventListener('submit', (e) => this.handleRegister(e));
 
-        // Logout buttons
+         // Password visibility toggles
+         document.getElementById('loginPasswordToggle').addEventListener('click', (e) => this.togglePasswordVisibility(e, 'loginPassword'));
+         document.getElementById('regPasswordToggle').addEventListener('click', (e) => this.togglePasswordVisibility(e, 'regPassword'));
+
+         // Logout buttons
         document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
         document.getElementById('studentLogoutBtn').addEventListener('click', () => this.logout());
         document.getElementById('adminLogoutBtn').addEventListener('click', () => this.logout());
@@ -159,27 +163,40 @@ class PerformanceTracker {
     }
 
     switchAuthTab(tab) {
-        const loginTab = document.getElementById('loginTab');
-        const registerTab = document.getElementById('registerTab');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
+         const loginTab = document.getElementById('loginTab');
+         const registerTab = document.getElementById('registerTab');
+         const loginForm = document.getElementById('loginForm');
+         const registerForm = document.getElementById('registerForm');
 
-        if (tab === 'login') {
-            loginTab.classList.add('bg-white', 'shadow-sm');
-            loginTab.classList.remove('text-gray-600');
-            registerTab.classList.remove('bg-white', 'shadow-sm');
-            registerTab.classList.add('text-gray-600');
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
-        } else {
-            registerTab.classList.add('bg-white', 'shadow-sm');
-            registerTab.classList.remove('text-gray-600');
-            loginTab.classList.remove('bg-white', 'shadow-sm');
-            loginTab.classList.add('text-gray-600');
-            registerForm.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-        }
-    }
+         if (tab === 'login') {
+             loginTab.classList.add('bg-white', 'shadow-sm');
+             loginTab.classList.remove('text-gray-600');
+             registerTab.classList.remove('bg-white', 'shadow-sm');
+             registerTab.classList.add('text-gray-600');
+             loginForm.classList.remove('hidden');
+             registerForm.classList.add('hidden');
+         } else {
+             registerTab.classList.add('bg-white', 'shadow-sm');
+             registerTab.classList.remove('text-gray-600');
+             loginTab.classList.remove('bg-white', 'shadow-sm');
+             loginTab.classList.add('text-gray-600');
+             registerForm.classList.remove('hidden');
+             loginForm.classList.add('hidden');
+         }
+     }
+
+     togglePasswordVisibility(e, fieldId) {
+         e.preventDefault();
+         const passwordField = document.getElementById(fieldId);
+         const toggleButton = e.currentTarget;
+         const isPassword = passwordField.type === 'password';
+         
+         // Toggle input type
+         passwordField.type = isPassword ? 'text' : 'password';
+         
+         // Update button appearance (optional: change icon or styling)
+         toggleButton.classList.toggle('text-primary');
+     }
 
     async handleLogin(e) {
         e.preventDefault();
