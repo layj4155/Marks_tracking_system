@@ -8,7 +8,7 @@ const assessmentSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['Formative', 'Summative'],
+    enum: ['Formative', 'Summative', 'Integrated'],
     required: true
   },
   course: {

@@ -14,7 +14,7 @@ router.use(requireRole(['teacher']));
 // Create a new assessment
 router.post('/', [
   body('name').trim().notEmpty().withMessage('Assessment name is required'),
-  body('type').isIn(['Formative', 'Summative']).withMessage('Type must be Formative or Summative'),
+  body('type').isIn(['Formative', 'Summative', 'Integrated']).withMessage('Type must be Formative, Summative, or Integrated'),
   body('courseId').isMongoId().withMessage('Valid course ID is required'),
   body('maxMarks').isNumeric().isFloat({ min: 1 }).withMessage('Max marks must be a positive number'),
   body('academicYear').notEmpty().withMessage('Academic year is required'),
